@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, {  lazy } from "react";
 import Homepagefillter from "./Homepagefillter";
 import HomePageCard from "./homePageCard";
 import ProductionProgress from "./ProductionProgress";
@@ -12,12 +12,12 @@ const ProductionShare = lazy(() => import("./charts/product_share"));
 const MultiProduction = lazy(() => import("./charts/multi_production"));
 const DashboardTables = lazy(() => import("./homeTable"));
 
-export default function HomePage() {
+export default React.memo( function HomePage() {
   
   return (
     <div className="flex flex-col min-h-screen gap-8 p-6 text-gray-700 bg-gray-50 print-area">
       {/* بخش فیلتر و کارت‌ها */}
-      <Homepagefillter />
+   <Homepagefillter />
       <HomePageCard />
 
       {/* بخش پیشرفت تولید */}
@@ -25,30 +25,21 @@ export default function HomePage() {
 
       {/* 📊 نمودارها */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Suspense fallback={<div>Loading...</div>}>
           <CapacityChart />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+     
           <InventoryTrend />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
           <MaterialConsumptionChart />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
           <ProductionChart />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
           <ProductionShare />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+     
+    
           <MultiProduction />
-        </Suspense>
+    
+
+        <DashboardTables />  
       </div>
 
-      {/* 🧾 جدول‌ها */}
-      <Suspense fallback={<div>Loading table...</div>}>
-        <DashboardTables />
-      </Suspense>
+
     </div>
   );
-}
+})

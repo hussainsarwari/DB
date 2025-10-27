@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import { LifeLine } from "react-loading-indicators";
+import Loading from '../Loading'
 const areaSeries = [
   { name: "Inventory (Units)", data: [200, 180, 190, 170, 160, 180, 200] },
 ];
@@ -33,7 +33,7 @@ export default React.memo(function ProductionShare() {
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
-            <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+           <Loading />
       </div>
     );
   }

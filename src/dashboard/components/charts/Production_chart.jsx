@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Loading from '../Loading'
 import Chart from "react-apexcharts";
-import { LifeLine } from "react-loading-indicators";
 const lineSeries = [{ name: "Production (Units)", data: [120, 150, 170, 140, 180, 200, 185] }];
 const lineOptions = {
   chart: { id: "line-chart", toolbar: { show: true }, zoom: { enabled: true } },
@@ -26,7 +26,7 @@ export default  React.memo(function ProductionChart() {
       if (!isLoaded) {
         return (
           <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
-                   <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+                        {/* <Loading /> */}
           </div>
         );
       }

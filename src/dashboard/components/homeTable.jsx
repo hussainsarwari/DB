@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LifeLine } from "react-loading-indicators";
+import Loading from './Loading'
 // تابع کمکی برای محدود کردن داده‌ها به 10 ردیف
 const limitToTen = (data) => data.slice(0, 10);
 
@@ -49,7 +49,7 @@ export default function DashboardTables ()  {
       if (!isLoaded) {
         return (
           <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
-         <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+              <Loading />
           </div>
         );
       }

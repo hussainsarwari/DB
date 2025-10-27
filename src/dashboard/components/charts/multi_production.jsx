@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-
+import Loading from '../Loading'
 import Chart from "react-apexcharts";
-import { LifeLine } from "react-loading-indicators";
 const stackedSeries = [
   { name: "Product X", data: [50, 60, 70, 40, 80, 90, 100] },
   { name: "Product Y", data: [30, 40, 20, 50, 30, 40, 35] },
@@ -30,7 +29,7 @@ export default  React.memo(function ProductionShare() {
       if (!isLoaded) {
         return (
           <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
-                  <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+               <Loading />
           </div>
         );
       }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LifeLine } from "react-loading-indicators";
+import Loading from './Loading'
 import {
   FiShoppingCart,
   FiDollarSign,
@@ -14,7 +14,7 @@ import {
 export default function HomePageCard() {
   const [summaryCards, setSummaryCards] = useState([]);
   const [detailsGroups, setDetailsGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoaded, setisLoaded] = useState(true);
 
   useEffect(() => {
     // شبیه‌سازی دریافت داده‌ها از سرور
@@ -82,14 +82,14 @@ export default function HomePageCard() {
       // مقداردهی به state ها
       setSummaryCards(summary);
       setDetailsGroups(groups);
-      setLoading(false);
-    }, 1500);
+      setisLoaded(false);
+    }, 5000);
   }, []);
 
-  if (loading) {
+  if (isLoaded) {
     return (
       <div className="flex items-center justify-center h-64">
-     <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+          <Loading />
       </div>
     );
   }

@@ -1,7 +1,7 @@
 // src/components/DashboardCharts.jsx
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import { LifeLine } from "react-loading-indicators";
+import Loading from '../Loading'
 const productionData = [
   { product: "Product A", daily: 120, weekly: 750, monthly: 3000 },
   { product: "Product B", daily: 150, weekly: 900, monthly: 3600 },
@@ -46,7 +46,7 @@ export default React.memo(function Capacity() {
     return (
       <div className="flex items-center justify-center h-[400px]">
         <div className="text-lg font-semibold text-gray-500 animate-pulse">
-         <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+          <Loading />
         </div>
       </div>
     );

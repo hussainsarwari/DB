@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LifeLine } from "react-loading-indicators";
+import Loading from '../Loading'
 import Chart from "react-apexcharts";
 const barSeries = [{ name: "Consumption (Kg)", data: [40, 55, 30, 70, 60] }];
 const barOptions = {
@@ -25,7 +25,7 @@ export default  React.memo(function MaterialConsumption() {
     if (!isLoaded) {
       return (
         <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
-                 <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+                    <Loading />
         </div>
       );
     }
