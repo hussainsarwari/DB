@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from './Loading'
+import Loading from '../Loading'
 // تابع کمکی برای محدود کردن داده‌ها به 10 ردیف
 const limitToTen = (data) => data.slice(0, 10);
 
@@ -41,7 +41,7 @@ export default function DashboardTables ()  {
         // شبیه‌سازی تاخیر برای لود شدن داده‌ها یا آماده‌سازی نمودار
         const timer = setTimeout(() => {
           setIsLoaded(true);
-        }, 600); // نیم‌ثانیه تاخیر برای جلوه‌ی بهتر
+        }, 9000); // نیم‌ثانیه تاخیر برای جلوه‌ی بهتر
     
         return () => clearTimeout(timer);
       }, []);

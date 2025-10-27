@@ -25,7 +25,7 @@ export default React.memo(function ProductionShare() {
     // شبیه‌سازی تاخیر برای لود شدن داده‌ها یا آماده‌سازی نمودار
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 600); // نیم‌ثانیه تاخیر برای جلوه‌ی بهتر
+    }, 3000); // نیم‌ثانیه تاخیر برای جلوه‌ی بهتر
 
     return () => clearTimeout(timer);
   }, []);
