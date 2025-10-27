@@ -1,0 +1,36 @@
+@media print {
+
+  /* پنهان کردن کل صفحه به‌صورت پیش‌فرض */
+  body * {
+    visibility: hidden;
+  }
+
+  /* فقط محتوای داخل print-area نمایش داده شود */
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  /* اطمینان از اینکه فقط print-area در صفحه چاپی دیده می‌شود */
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* پنهان کردن دکمه‌ها، هدر، سایدبار و ... */
+  .no-print,
+  header,
+  aside,
+  nav {
+    display: none !important;
+  }
+
+  /* جلوگیری از شکستن جدول در صفحات چاپ */
+  table {
+    page-break-inside: avoid;
+  }
+}
