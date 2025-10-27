@@ -9,7 +9,7 @@ import { CgBoy, CgProductHunt } from "react-icons/cg";
 import { FaMoneyBill } from "react-icons/fa";
 import {  MdManageHistory, MdWebAsset } from "react-icons/md";
 
-import {useLanguage} from "../../LanguageContext"
+import {useLanguage} from "../../Provider/LanguageContext"
 
 const menuItems = [
   { key: "home", label: "home", icon: <Home size={18} /> },

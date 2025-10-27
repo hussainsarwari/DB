@@ -4,10 +4,7 @@ import {
 } from "lucide-react";
 import Sidebar from "./components/sidebar";
 import HomePage from "./components/home_page";
-import {useLanguage} from "../LanguageContext"
-
-// دیکشنری زبان
-
+import {useLanguage} from "../Provider/LanguageContext"
 
 export default function DashboardMainPage() {
   const [menuCollapsed, setMenuCollapsed] = useState(false);

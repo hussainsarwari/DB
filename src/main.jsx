@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-import { LanguageProvider } from "./LanguageContext";
+import { LanguageProvider } from "./Provider/LanguageContext";
 
 
 createRoot(document.getElementById("root")).render(
