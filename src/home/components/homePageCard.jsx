@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from './Loading'
+import Loading from "./Loading";
 import {
   FiShoppingCart,
   FiDollarSign,
@@ -10,8 +10,10 @@ import {
   FiActivity,
   FiBarChart2,
 } from "react-icons/fi";
+import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function HomePageCard() {
+  const { t, lang } = useLanguage(); // گرفتن ترجمه‌ها از context
   const [summaryCards, setSummaryCards] = useState([]);
   const [detailsGroups, setDetailsGroups] = useState([]);
   const [isLoaded, setisLoaded] = useState(true);
@@ -22,22 +24,22 @@ export default function HomePageCard() {
       // ۴ کارت اصلی
       const summary = [
         {
-          title: "میزان خرید کل",
+          title: t.totalPurchases,
           value: 120000,
           icon: <FiShoppingCart size={28} className="text-blue-500" />,
         },
         {
-          title: "میزان پرداخت کل",
+          title: t.totalPayments,
           value: 80000,
           icon: <FiDollarSign size={28} className="text-green-500" />,
         },
         {
-          title: "میزان فروش کل",
+          title: t.totalSales,
           value: 150000,
           icon: <FiTrendingUp size={28} className="text-purple-500" />,
         },
         {
-          title: "بدهی مشتریان",
+          title: t.customerDebts,
           value: 30000,
           icon: <FiClock size={28} className="text-red-500" />,
         },
@@ -46,56 +48,55 @@ export default function HomePageCard() {
       // جزئیات گروه‌بندی‌شده
       const groups = [
         {
-          groupTitle: "خرید و پرداخت‌ها",
+          groupTitle: t.purchaseAndPayments,
           icon: <FiShoppingCart className="text-blue-500" />,
           items: [
-            { label: "میزان خرید", value: 50000, icon: <FiPackage /> },
-            { label: "میزان پرداخت", value: 30000, icon: <FiCreditCard /> },
-            { label: "قرضداری تامین‌کننده", value: 20000, icon: <FiActivity /> },
-            { label: "مقدار باقی‌مانده", value: 15000, icon: <FiClock /> },
+            { label: t.purchaseAmount, value: 50000, icon: <FiPackage /> },
+            { label: t.paymentAmount, value: 30000, icon: <FiCreditCard /> },
+            { label: t.supplierDebt, value: 20000, icon: <FiActivity /> },
+            { label: t.remainingAmount, value: 15000, icon: <FiClock /> },
           ],
           dateRange: "1404/07/01 - 1404/07/26",
         },
         {
-          groupTitle: "فروش و مشتریان",
+          groupTitle: t.salesAndCustomers,
           icon: <FiTrendingUp className="text-purple-500" />,
           items: [
-            { label: "میزان فروش", value: 60000, icon: <FiPackage /> },
-            { label: "پرداخت مشتریان", value: 40000, icon: <FiCreditCard /> },
-            { label: "باقی‌مانده مشتریان", value: 20000, icon: <FiClock /> },
+            { label: t.salesAmount, value: 60000, icon: <FiPackage /> },
+            { label: t.customerPayments, value: 40000, icon: <FiCreditCard /> },
+            { label: t.customerRemaining, value: 20000, icon: <FiClock /> },
           ],
           dateRange: "1404/07/01 - 1404/07/26",
         },
         {
-          groupTitle: "مفاد و مصارف",
+          groupTitle: t.profitAndExpense,
           icon: <FiBarChart2 className="text-green-500" />,
           items: [
-            { label: "مفاد خالص", value: 35000, icon: <FiActivity /> },
-            { label: "مفاد ناخالص", value: 45000, icon: <FiActivity /> },
-            { label: "مصارف", value: 25000, icon: <FiActivity /> },
-            { label: "بیلانس نهایی", value: 20000, icon: <FiActivity /> },
+            { label: t.netProfit, value: 35000, icon: <FiActivity /> },
+            { label: t.grossProfit, value: 45000, icon: <FiActivity /> },
+            { label: t.expenses, value: 25000, icon: <FiActivity /> },
+            { label: t.finalBalance, value: 20000, icon: <FiActivity /> },
           ],
           dateRange: "1404/07/01 - 1404/07/26",
         },
       ];
 
-      // مقداردهی به state ها
       setSummaryCards(summary);
       setDetailsGroups(groups);
       setisLoaded(false);
-    }, 5000);
-  }, []);
+    }, 1000);
+  }, [t]); // هر وقت زبان تغییر کند، دوباره ترجمه می‌شود
 
   if (isLoaded) {
     return (
       <div className="flex items-center justify-center h-64">
-          <Loading />
+        <Loading />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5 space-y-10">
+    <div className="flex flex-col gap-5 space-y-10" dir={lang === "fa" ? "rtl" : "ltr"}>
       {/* ۴ کارت اصلی */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {summaryCards.map((card, idx) => (
@@ -123,7 +124,9 @@ export default function HomePageCard() {
                 {group.groupTitle}
               </h3>
             </div>
-            <span className="text-gray-500">{group.dateRange}</span>
+            <span className="text-gray-500">
+              {t.dateRange}: {group.dateRange}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">

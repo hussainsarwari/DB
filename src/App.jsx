@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "./Login/Login";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from './Login/ResetPasswor'
-import DashboadMainPage from './dashboard/mainPage'
+import DashboadMainPage from './home/mainPage'
 
 export default function App() {
   return (
