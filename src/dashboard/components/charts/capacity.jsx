@@ -1,8 +1,7 @@
 // src/components/DashboardCharts.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-
-// ====== داده‌های ثابت ======
+import { LifeLine } from "react-loading-indicators";
 const productionData = [
   { product: "Product A", daily: 120, weekly: 750, monthly: 3000 },
   { product: "Product B", daily: 150, weekly: 900, monthly: 3600 },
@@ -15,10 +14,6 @@ const customerData = [
   { customer: "Customer X", total: "$2000", paid: "$1500", remaining: "$500", dueDate: "2025-10-28" },
   { customer: "Customer Y", total: "$3000", paid: "$2000", remaining: "$1000", dueDate: "2025-10-30" },
 ];
-
-
-
-
 
 const gaugeSeries = [76];
 const gaugeOptions = {
@@ -35,16 +30,34 @@ const gaugeOptions = {
   labels: ["Capacity"],
 };
 
-// ====== کامپوننت اصلی ======
 export default React.memo(function Capacity() {
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  useEffect(() => {
+    // شبیه‌سازی لود شدن دیتا از سرور
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 500); // نیم‌ثانیه تاخیر برای زیبایی
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-lg font-semibold text-gray-500 animate-pulse">
+         <LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 transition-all duration-700 ease-in-out opacity-100">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
         {/* Production Table */}
-        <div className="p-4 overflow-auto bg-white shadow-md h-[350px] rounded-xl">
+        <div className="p-4 overflow-auto bg-white shadow-md h-[350px] rounded-xl transition-all duration-700">
           <h2 className="py-3 mb-4 text-xl font-bold text-center">Production Report</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
@@ -68,14 +81,8 @@ export default React.memo(function Capacity() {
           </table>
         </div>
 
-       
-
-      
-
-      
-     
         {/* Customer Receivables Table */}
-        <div className="p-4 overflow-auto bg-white shadow-md h-[350px] rounded-xl">
+        <div className="p-4 overflow-auto bg-white shadow-md h-[350px] rounded-xl transition-all duration-700">
           <h2 className="py-5 mb-4 text-xl font-bold text-center">Customer Receivables</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
@@ -101,10 +108,8 @@ export default React.memo(function Capacity() {
           </table>
         </div>
 
-      
-
         {/* Gauge Chart */}
-        <div className="p-6 bg-white shadow-md rounded-xl">
+        <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl">
           <h2 className="mb-4 text-xl font-bold">Capacity Utilization</h2>
           <Chart options={gaugeOptions} series={gaugeSeries} type="radialBar" height={250} />
         </div>

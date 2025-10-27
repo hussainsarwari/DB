@@ -1,0 +1,1 @@
+<LifeLine color="#31a4cc" size="small" text="Loading..." textColor="#65b3d7" />
