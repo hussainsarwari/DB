@@ -10,6 +10,8 @@ import { FaMoneyBill } from "react-icons/fa";
 import {  MdManageHistory, MdWebAsset } from "react-icons/md";
 
 import {useLanguage} from "../../Provider/LanguageContext"
+import { Moon, Sun } from "lucide-react";
+
 
 const menuItems = [
   { key: "home", label: "home", icon: <Home size={18} /> },
@@ -36,7 +38,7 @@ const menuItems = [
 
 }) {
   
-    let {t,lang,setLang,dir,showLanguageBox,showSettingBox,active,setActive}=useLanguage();
+    let {t,lang,setLang,dir,showLanguageBox,showSettingBox,active,setActive, darkmode, toggledarkmode}=useLanguage();
   
   const getMenuToggleIcon = () => {
     if (isMobile) return <X size={20} />;
@@ -47,6 +49,7 @@ const menuItems = [
   return (
     <aside
       className={`fixed top-0 bottom-0 z-40 transform lg:relative transition-all duration-300 ${
+        
         isMobile
           ? mobileMenuOpen
             ? "translate-x-0"
@@ -54,10 +57,10 @@ const menuItems = [
           : menuCollapsed
           ? "w-16"
           : "w-64"
-      } lg:translate-x-0 bg-[#0a3e6f] text-white flex flex-col shadow-xl`}
+      } ${darkmode? " bg-gray-900 ":" bg-[#ffffff] "}lg:translate-x-0 flex flex-col shadow-2xl`}
     >
       {/* header */}
-      <div className="flex items-center justify-between p-3 font-bold text-center">
+      <div className={`flex items-center justify-between p-3 font-bold text-center  ${darkmode? " text-gray-400":""}`}>
         {!menuCollapsed && <span>{t.dashboard}</span>}
         <span
           onClick={() =>
@@ -65,7 +68,7 @@ const menuItems = [
               ? setMobileMenuOpen(false)
               : setMenuCollapsed(!menuCollapsed)
           }
-          className="p-2 rounded-full cursor-pointer hover:bg-[#2f5a7c]"
+          className={`p-2 rounded-full cursor-pointer  ${darkmode? "hover:bg-blue-500":"hover:bg-blue-300"}`}
         >
           {getMenuToggleIcon()}
         </span>
@@ -95,39 +98,56 @@ const menuItems = [
                   toggleBox("setting_not");
                 }
               }}
-              className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm hover:bg-[#365478] ${
-                active === item.key ? "bg-[#365478]" : ""
+              className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2  text-sm ${darkmode?"hover:bg-gray-800 ":"hover:bg-blue-200 "}  ${
+                active === item.key ? darkmode? "bg-blue-700": "bg-blue-500 text-gray-400" : ""
               } ${dir}`}
             >
+             <span className={`${darkmode? "text-gray-400":"text-gray-950"}`}>
               {item.icon}
-              {!menuCollapsed && <span>{t[item.label]}</span>}
+              </span> 
+              {!menuCollapsed && <span className={`${darkmode?"text-gray-400":"text-gray-800"}`}>{t[item.label]}</span>}
             </li>
           ))}
         </ul>
 
+    
         {/* footer items */}
-        <ul className="flex flex-col gap-1 mb-4">
-          <li
-            onClick={() => {
-              toggleBox("setting");
-            }}
-            className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm hover:bg-[#365478] ${
-              active === "settings" ? "bg-[#365478]" : ""
-            } ${dir}`}
-          >
-            <Settings size={18} />
-            {!menuCollapsed && <span>{t.settings}</span>}
-          </li>
-          <li
-            onClick={() => setActive("logout")}
-            className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm hover:bg-[#365478] ${
-              active === "logout" ? "bg-[#365478]" : ""
-            } ${dir}`}
-          >
-            <LogOut size={18} />
-            {!menuCollapsed && <span>{t.logout}</span>}
-          </li>
-        </ul>
+<ul className="flex flex-col gap-1 mb-4">
+  <li
+    onClick={() => toggledarkmode()}
+    className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm   transition-colors ${
+      darkmode ? "bg-gray-900 hover:bg-gray-800 text-gray-400" : "bg-whtie hover:bg-blue-500"
+    } ${dir}`}
+  >
+    {!darkmode ? <Moon size={18} /> : <Sun size={18} className="text-gray-400" />}
+    {!menuCollapsed && (
+      <span>{!darkmode ? t.darkMode : t.lightMode}</span>
+    )}
+  </li>
+
+  <li
+    onClick={() => {
+      toggleBox("setting");
+    }}
+    className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm hover:bg-[#365478] ${
+      active === "settings" ? "bg-[#365478]" : ""
+    } ${dir} ${ darkmode ? "bg-gray-900 hover:bg-gray-800 text-gray-400" : "bg-whtie hover:bg-blue-500"}`}
+  >
+    <Settings size={18} />
+    {!menuCollapsed && <span>{t.settings}</span>}
+  </li>
+
+  <li
+    onClick={() => setActive("logout")}
+    className={`flex items-center gap-3 cursor-pointer rounded px-3 py-2 text-sm ${darkmode?" hover:bg-[#365478]":" hover:bg-[#365478]"} ${
+      active === "logout" ? "bg-[#365478]" : ""
+    } ${dir} ${ darkmode ? "bg-gray-900 hover:bg-gray-800 text-gray-400" : "bg-whtie hover:bg-blue-500"}`}
+  >
+    <LogOut size={18} />
+    {!menuCollapsed && <span>{t.logout}</span>}
+  </li>
+</ul>
+
       </nav>
 
       {/* language popup */}
@@ -135,7 +155,7 @@ const menuItems = [
         <div
           className={`absolute bottom-60 ${
             lang === "eng" ? "left-16" : "right-16"
-          } bg-[#165078] text-white rounded-xl shadow-lg p-3 w-40 transition-opacity duration-300`}
+          } bg-[#165078] text-gray-400 rounded-xl shadow-lg p-3 w-40 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li
@@ -159,7 +179,7 @@ const menuItems = [
         <div
           className={`absolute bottom-16 ${
             lang === "eng" ? "left-16" : "right-16"
-          } bg-[#165078] text-white rounded-xl shadow-lg p-3 w-52 transition-opacity duration-300`}
+          } bg-[#165078] text-gray-400 rounded-xl shadow-lg p-3 w-52 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li className="hover:bg-[#164070] px-2 py-1 rounded cursor-pointer">

@@ -1,11 +1,14 @@
 // src/context/LanguageContext.jsx
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, { createContext, useContext, useState, useMemo , useEffect} from "react";
 import { translations } from "./dictionary";
 
 const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
+  const [darkmode,setdarkmode]=useState(
+     localStorage.getItem("darkmode") || false
+  );
   const [active, setActive] = useState("home");
   const [lang, setLang] = useState("eng");
   const [loading, setLoading] = useState(false);
@@ -16,6 +19,26 @@ export const LanguageProvider = ({ children }) => {
   // انتخاب ترجمه از فایل جداگانه
   const t = useMemo(() => translations[lang], [lang]);
   const dir = lang === "eng" ? "flex-row" : "flex-row-reverse";
+
+
+
+
+
+
+   // تغییر کلاس HTML برای Tailwind
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (darkmode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("darkmode", darkmode);
+  }, [darkmode]);
+
+  const toggledarkmode = () => {
+    setdarkmode((prev) => (prev ? false : true));
+  };
 
   return (
     <LanguageContext.Provider
@@ -34,6 +57,9 @@ export const LanguageProvider = ({ children }) => {
         setNotification,
         loading,
         setLoading,
+        darkmode,
+        setdarkmode,
+        toggledarkmode
       }}
     >
       {children}

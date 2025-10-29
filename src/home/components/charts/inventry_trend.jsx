@@ -5,7 +5,7 @@ import { useLanguage } from "../../../Provider/LanguageContext";
 
 export default React.memo(function ProductionShare() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage();
+  const { t ,darkmode} = useLanguage();
 
   const areaSeries = [{ name: t.inventoryUnits, data: [200, 180, 190, 170, 160, 180, 200] }];
 
@@ -26,15 +26,16 @@ export default React.memo(function ProductionShare() {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center h-[250px] bg-white shadow-md rounded-xl">
+      <div className={`flex items-center justify-center h-[250px]  shadow-2xl rounded-xl ${darkmode?"bg-gray-900":"bg-white"}`}>
         <Loading text={t.loading} />
       </div>
     );
   }
 
   return (
-    <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl">
-      <h2 className="mb-4 text-xl font-bold">{t.inventoryTrend}</h2>
+   <div className={`p-6 transition-all duration-700  shadow-2xl rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
+      <h2 className={ `mb-4 text-xl font-bold  sm:text-lg ${darkmode?"text-gray-400":"text-graw-800"} text-center`}>
+        {t.inventoryTrend}</h2>
       <Chart options={areaOptions} series={areaSeries} type="area" />
     </div>
   );

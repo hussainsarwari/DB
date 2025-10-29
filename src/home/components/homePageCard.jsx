@@ -14,6 +14,7 @@ import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function HomePageCard() {
   const { t, lang } = useLanguage(); // گرفتن ترجمه‌ها از context
+   const { darkmode } = useLanguage();
   const [summaryCards, setSummaryCards] = useState([]);
   const [detailsGroups, setDetailsGroups] = useState([]);
   const [isLoaded, setisLoaded] = useState(true);
@@ -26,22 +27,22 @@ export default function HomePageCard() {
         {
           title: t.totalPurchases,
           value: 120000,
-          icon: <FiShoppingCart size={28} className="text-blue-500" />,
+          icon: <FiShoppingCart size={28} className="text-gray-300" />,
         },
         {
           title: t.totalPayments,
           value: 80000,
-          icon: <FiDollarSign size={28} className="text-green-500" />,
+          icon: <FiDollarSign size={28} className="text-gray-300" />,
         },
         {
           title: t.totalSales,
           value: 150000,
-          icon: <FiTrendingUp size={28} className="text-purple-500" />,
+          icon: <FiTrendingUp size={28} className="text-gray-300" />,
         },
         {
           title: t.customerDebts,
           value: 30000,
-          icon: <FiClock size={28} className="text-red-500" />,
+          icon: <FiClock size={28} className="text-gray-300" />,
         },
       ];
 
@@ -49,7 +50,7 @@ export default function HomePageCard() {
       const groups = [
         {
           groupTitle: t.purchaseAndPayments,
-          icon: <FiShoppingCart className="text-blue-500" />,
+          icon: <FiShoppingCart className="text-gray-400" />,
           items: [
             { label: t.purchaseAmount, value: 50000, icon: <FiPackage /> },
             { label: t.paymentAmount, value: 30000, icon: <FiCreditCard /> },
@@ -60,7 +61,7 @@ export default function HomePageCard() {
         },
         {
           groupTitle: t.salesAndCustomers,
-          icon: <FiTrendingUp className="text-purple-500" />,
+          icon: <FiTrendingUp className={`text-gray-400`} />,
           items: [
             { label: t.salesAmount, value: 60000, icon: <FiPackage /> },
             { label: t.customerPayments, value: 40000, icon: <FiCreditCard /> },
@@ -70,7 +71,7 @@ export default function HomePageCard() {
         },
         {
           groupTitle: t.profitAndExpense,
-          icon: <FiBarChart2 className="text-green-500" />,
+          icon: <FiBarChart2 className="text-gray-400" />,
           items: [
             { label: t.netProfit, value: 35000, icon: <FiActivity /> },
             { label: t.grossProfit, value: 45000, icon: <FiActivity /> },
@@ -102,11 +103,11 @@ export default function HomePageCard() {
         {summaryCards.map((card, idx) => (
           <div
             key={idx}
-            className="flex flex-col items-center justify-center p-6 text-center transform bg-white shadow-md rounded-xl hover:shadow-xl hover:-translate-y-1"
+            className={`flex flex-col items-center justify-center p-6 text-center transform  shadow-2xl rounded-xl hover:shadow-3xl hover:-translate-y-1 ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
           >
-            <div className="mb-3">{card.icon}</div>
-            <h3 className="font-medium text-gray-600">{card.title}</h3>
-            <p className="mt-2 text-2xl font-bold text-gray-800">{card.value}</p>
+            <div className={`mb-3 `}>{card.icon}</div>
+            <h3 className="font-medium ">{card.title}</h3>
+            <p className="mt-2 text-2xl font-bold ">{card.value}</p>
           </div>
         ))}
       </div>
@@ -115,16 +116,16 @@ export default function HomePageCard() {
       {detailsGroups.map((group, idx) => (
         <div
           key={idx}
-          className="flex flex-col gap-12 p-6 bg-white shadow-md rounded-xl"
+          className={`flex flex-col gap-12 p-6 shadow-2xl rounded-xl ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               {group.icon}
-              <h3 className="text-xl font-bold text-center text-gray-700">
+              <h3 className="text-xl font-bold text-center ">
                 {group.groupTitle}
               </h3>
             </div>
-            <span className="text-gray-500">
+            <span className="">
               {t.dateRange}: {group.dateRange}
             </span>
           </div>
@@ -133,13 +134,13 @@ export default function HomePageCard() {
             {group.items.map((item, idx2) => (
               <div
                 key={idx2}
-                className="flex items-center justify-between p-4 rounded-lg shadow-sm bg-gray-50"
+                className={ `flex items-center justify-between p-4 rounded-lg shadow-xl ${ darkmode ? "bg-gray-800 text-gray-500" : "bg-gray-200 text-gray-700"}`}
               >
                 <div className="flex items-center gap-2">
                   {item.icon}
-                  <span className="font-medium text-gray-600">{item.label}</span>
+                  <span className="font-medium ">{item.label}</span>
                 </div>
-                <span className="font-bold text-gray-800">{item.value}</span>
+                <span className="font-bold ">{item.value}</span>
               </div>
             ))}
           </div>

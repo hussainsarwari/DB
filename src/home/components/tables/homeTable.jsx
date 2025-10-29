@@ -28,7 +28,7 @@ const productionData = limitToTen([
 
 export default function DashboardTables() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage();
+  const { t ,darkmode} = useLanguage();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 600);
@@ -44,29 +44,29 @@ export default function DashboardTables() {
   }
 
   const DashboardTable = ({ title, headers, rows }) => (
-    <section className="w-full transition-transform transform bg-white shadow-md rounded-xl hover:shadow-xl hover:-translate-y-1">
+    <section className={`w-full transition-transform transform shadow-2xl rounded-xl hover:shadow-3xl hover:-translate-y-1 ${darkmode?"bg-gray-900":"hover:bg-blue-50"}`}>
       <header className="flex flex-col px-4 py-3 border-b border-gray-200 sm:flex-row sm:justify-between sm:items-center">
-        <h2 className="text-base font-semibold text-gray-800 sm:text-lg">{title}</h2>
+        <h2 className="text-base font-semibold text-gray-400 sm:text-lg">{title}</h2>
         <p className="mt-1 text-xs text-gray-500 sm:mt-0 sm:text-sm">
           Updated: {new Date().toLocaleDateString()}
         </p>
       </header>
       <div className="overflow-x-auto">
         <table className="min-w-full text-xs text-gray-700 divide-y divide-gray-200 sm:text-sm">
-          <thead className="bg-gray-100">
+          <thead className= {`${darkmode?"bg-gray-800 text-gray-300":"bg-gray-100"} text-center`}>
             <tr>
               {headers.map((h, i) => (
-                <th key={i} className="px-3 py-2 font-medium text-left whitespace-nowrap sm:px-4 sm:py-3">
+                <th key={i} className="px-3 py-2 font-medium text-center whitespace-nowrap sm:px-4 sm:py-3">
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-500">
             {rows.map((row, rIdx) => (
-              <tr key={rIdx} className="transition-colors duration-150 hover:bg-gray-50">
+              <tr key={rIdx} className={`transition-colors duration-150  ${darkmode?"hover:bg-gray-800":"hover:bg-gray-50"}`}>
                 {row.map((cell, cIdx) => (
-                  <td key={cIdx} className="px-3 py-2 text-gray-600 whitespace-nowrap sm:px-4 sm:py-3">
+                  <td key={cIdx} className="px-3 py-2 text-center text-gray-400 whitespace-nowrap sm:px-4 sm:py-3">
                     {cell}
                   </td>
                 ))}
