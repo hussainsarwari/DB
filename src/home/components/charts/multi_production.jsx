@@ -5,7 +5,7 @@ import { useLanguage } from "../../../Provider/LanguageContext";
 
 export default React.memo(function ProductionShare() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage();
+  const { t ,darkmode} = useLanguage();
 
   const stackedSeries = [
     { name: "محصول ", data: [50, 60, 70, 40, 80, 90, 100] },
@@ -39,8 +39,8 @@ export default React.memo(function ProductionShare() {
   }
 
   return (
-    <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl hover:shadow-lg">
-      <h2 className="mb-4 text-xl font-bold text-gray-800 sm:text-lg">
+ <div className={`p-6 transition-all duration-700  shadow-2xl rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
+      <h2 className={ `mb-4 text-xl font-bold  sm:text-lg ${darkmode?"text-gray-400":"text-graw-800"} text-center`}>
         {t.multiProductProduction}
       </h2>
       <div>

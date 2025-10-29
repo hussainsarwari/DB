@@ -5,7 +5,7 @@ import { useLanguage } from "../../../Provider/LanguageContext";
 
 export default React.memo(function MaterialConsumption() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage();
+  const { t ,darkmode} = useLanguage();
 
   const barSeries = [{ name: t.consumptionKg, data: [40, 55, 30, 70, 60] }];
 
@@ -40,8 +40,8 @@ export default React.memo(function MaterialConsumption() {
   }
 
   return (
-    <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl">
-      <h2 className="mb-4 text-xl font-bold text-gray-800 sm:text-lg">
+    <div className={`p-6 transition-all duration-700  shadow-2xl rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
+      <h2 className={ `mb-4 text-xl font-bold  sm:text-lg ${darkmode?"text-gray-400":"text-graw-800"} text-center`}>
         {t.materialConsumption}
       </h2>
       <Chart options={barOptions} series={barSeries} type="bar" />

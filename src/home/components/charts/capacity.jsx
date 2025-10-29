@@ -4,7 +4,7 @@ import Loading from '../Loading';
 import { useLanguage } from '../../../Provider/LanguageContext';
 
 export default React.memo(function Capacity() {
-  const { t } = useLanguage(); // گرفتن ترجمه‌ها از کانتکست
+  const { t,darkmode } = useLanguage(); // گرفتن ترجمه‌ها از کانتکست
   const [isLoaded, setIsLoaded] = useState(false);
 
   const gaugeSeries = [76];
@@ -42,8 +42,8 @@ export default React.memo(function Capacity() {
   }
 
   return (
-    <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl">
-      <h2 className="mb-4 text-xl font-bold">{t.inventryCapacity}</h2>
+    <div className={`p-6 transition-all duration-700  shadow-2xl rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
+      <h2 className={`mb-4 text-xl font-bold text-center ${darkmode?"text-gray-400":"gray-800"}`}>{t.inventryCapacity}</h2>
       <Chart options={gaugeOptions} series={gaugeSeries} type="radialBar" height={250}/>
     </div>
   );

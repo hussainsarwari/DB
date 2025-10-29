@@ -25,7 +25,7 @@ const donutOptions = {
 
 export default React.memo(function Expenses() {
   const [isLoaded, setIsLoaded] = useState(false);
-    const { t } = useLanguage();
+    const { t ,darkmode} = useLanguage();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 800);
@@ -41,10 +41,11 @@ export default React.memo(function Expenses() {
   }
 
   return (
-    <div className="p-6 transition-all duration-700 bg-white shadow-md rounded-xl hover:shadow-lg">
-      <h2 className="mb-4 text-xl font-bold text-gray-800 sm:text-lg">
+    <div className={`p-6 transition-all duration-700 shadow-2xl bg- rounded-xl hover:shadow-lg ${darkmode?"bg-gray-900":"bg-white"}`}>
+      <h2 className={`mb-4 text-xl font-bold text-center sm:text-lg ${darkmode?"text-gray-400":"text-gray-800"}`}>
         {t.expensives}
       </h2>
+      
       <div className="">
         <Chart options={donutOptions} series={donutSeries} type="donut" height={250} width="100%" />
       </div>

@@ -12,7 +12,7 @@ const productionData = [
 
 export default React.memo(function ProductionTable() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage();
+  const { t ,darkmode} = useLanguage();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 1000);
@@ -28,26 +28,26 @@ export default React.memo(function ProductionTable() {
   }
 
   return (
-    <div className="p-4 overflow-auto transition-all duration-700 bg-white shadow-md rounded-xl h-[440px]">
-      <h2 className="py-3 mb-4 text-xl font-bold text-center text-gray-800">
+    <div className={`p-4 overflow-auto transition-all duration-700  shadow-2xl rounded-xl h-[440px] ${darkmode?"bg-gray-900":"bg-white"}`}>
+      <h2 className="py-3 mb-4 text-xl font-bold text-center text-gray-400">
         {t.productionReport}
       </h2>
       <table className="min-w-full divide-y divide-gray-200 table-auto">
-        <thead className="bg-gray-100">
+        <thead className={`${darkmode? "bg-gray-800":"bg-gray-100"}`}>
           <tr>
-            <th className="px-4 py-2 text-left text-gray-700">{t.product}</th>
-            <th className="px-4 py-2 text-left text-gray-700">{t.daily}</th>
-            <th className="px-4 py-2 text-left text-gray-700">{t.weekly}</th>
-            <th className="px-4 py-2 text-left text-gray-700">{t.monthly}</th>
+            <th className="px-4 py-2 text-center text-gray-400">{t.product}</th>
+            <th className="px-4 py-2 text-center text-gray-400">{t.daily}</th>
+            <th className="px-4 py-2 text-center text-gray-400">{t.weekly}</th>
+            <th className="px-4 py-2 text-center text-gray-400">{t.monthly}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
+        <tbody className="divide-y divide-gray-400">
           {productionData.map((row, idx) => (
-            <tr key={idx} className="hover:bg-blue-50">
-              <td className="px-4 py-2">{row.product}</td>
-              <td className="px-4 py-2">{row.daily}</td>
-              <td className="px-4 py-2">{row.weekly}</td>
-              <td className="px-4 py-2">{row.monthly}</td>
+            <tr key={idx} className={` ${darkmode?"hover:bg-gray-500":"hover:bg-blue-50"}`}>
+              <td className="px-4 py-2 text-center">{row.product}</td>
+              <td className="px-4 py-2 text-center">{row.daily}</td>
+              <td className="px-4 py-2 text-center">{row.weekly}</td>
+              <td className="px-4 py-2 text-center">{row.monthly}</td>
             </tr>
           ))}
         </tbody>

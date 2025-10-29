@@ -10,7 +10,7 @@ const customerData = [
 
 export default React.memo(function CustomerReceivables() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t } = useLanguage(); // گرفتن ترجمه‌ها از Context
+  const { t,darkmode } = useLanguage(); // گرفتن ترجمه‌ها از Context
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 1500);
@@ -26,38 +26,38 @@ export default React.memo(function CustomerReceivables() {
   }
 
   return (
-    <section className="w-full max-w-6xl p-0 mx-auto overflow-y-auto sm:p-6 lg:p-0 h-[300px] shadow-md">
-      <div className="overflow-hidden transition-all duration-700 bg-white shadow-md rounded-xl">
+    <section className={`w-full max-w-6xl p-0 mx-auto overflow-y-auto sm:p-6 lg:p-0 h-[300px] shadow-2xl ${darkmode?"":""}`}>
+      <div className={`overflow-hidden transition-all duration-700  p-2 shadow-2xl rounded-xl ${darkmode?"bg-gray-900":"bg-white"}`}>
         {/* Header */}
-        <header className="flex flex-col px-4 py-5 border-b border-gray-100 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <h2 className="text-lg font-semibold text-center text-gray-800 sm:text-xl sm:text-left">
+        <header className={`flex flex-col px-4 py-5 border-b border-gray-100 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${darkmode?"":""}`}>
+          <h2 className={`mb-4 text-xl font-bold  ${darkmode?"text-gray-400":"text-gray-500"}`}>
             {t.customerReceivables}
           </h2>
-          <p className="mt-2 text-sm text-center text-gray-500 sm:text-right sm:mt-0">
+          <p className={`mb-4 text-sm  ${darkmode?"text-gray-400":"text-gray-500"}`}>
             {t.updated}: {new Date().toLocaleDateString()}
           </p>
         </header>
 
         {/* Table Container */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-600">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-100 sm:text-sm">
+          <table className="w-full text-sm text-left text-gray-500">
+            <thead className={`text-xs uppercase sm:text-sm ${darkmode?"bg-gray-800 ":"bg-gray-200"}`}>
               <tr>
-                <th className="px-4 py-3 sm:px-6 whitespace-nowrap">{t.customer}</th>
-                <th className="px-4 py-3 sm:px-6 whitespace-nowrap">{t.total}</th>
-                <th className="px-4 py-3 sm:px-6 whitespace-nowrap">{t.paid}</th>
-                <th className="px-4 py-3 sm:px-6 whitespace-nowrap">{t.remaining}</th>
-                <th className="px-4 py-3 sm:px-6 whitespace-nowrap">{t.dueDate}</th>
+                <th className="px-4 py-3 text-center sm:px-6 whitespace-nowrap">{t.customer}</th>
+                <th className="px-4 py-3 text-center sm:px-6 whitespace-nowrap">{t.total}</th>
+                <th className="px-4 py-3 text-center sm:px-6 whitespace-nowrap">{t.paid}</th>
+                <th className="px-4 py-3 text-center sm:px-6 whitespace-nowrap">{t.remaining}</th>
+                <th className="px-4 py-3 text-center sm:px-6 whitespace-nowrap">{t.dueDate}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-500">
               {customerData.map((row, idx) => (
-                <tr key={idx} className="transition-colors duration-200 hover:bg-gray-50">
+                <tr key={idx} className={`transition-colors duration-200  ${darkmode?"hover:bg-gray-800 text-gray-400":"text-gray-800 hover:bg-gray-50"}`}>
                   <td className="px-4 py-3 font-medium text-gray-800 sm:px-6">{row.customer}</td>
-                  <td className="px-4 py-3 sm:px-6">{row.total}</td>
-                  <td className="px-4 py-3 text-green-600 sm:px-6">{row.paid}</td>
-                  <td className="px-4 py-3 text-red-500 sm:px-6">{row.remaining}</td>
-                  <td className="px-4 py-3 text-gray-500 sm:px-6">{row.dueDate}</td>
+                  <td className="px-4 py-3 text-center sm:px-6">{row.total}</td>
+                  <td className="px-4 py-3 text-center sm:px-6">{row.paid}</td>
+                  <td className="px-4 py-3 text-center sm:px-6">{row.remaining}</td>
+                  <td className="px-4 py-3 text-center sm:px-6">{row.dueDate}</td>
                 </tr>
               ))}
             </tbody>
@@ -65,7 +65,7 @@ export default React.memo(function CustomerReceivables() {
         </div>
 
         {/* Footer Summary */}
-        <footer className="px-4 py-4 text-sm text-center text-gray-500 sm:px-6 bg-gray-50 sm:text-right">
+        <footer className={`px-4 py-4 text-sm text-centersm:px-6  sm:text-right ${darkmode?"text-gray-500 bg-gray-900":" text-gray-500 bg-gray-50"}`}>
           {t.showing} {customerData.length} {t.customer}
         </footer>
       </div>
