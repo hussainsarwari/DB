@@ -5,7 +5,7 @@ import "../components/print.css";
 import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function ProductionManagement() {
-  const { t } = useLanguage();
+  const { t,darkmode } = useLanguage();
 
   const [productions, setProductions] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -144,10 +144,10 @@ export default function ProductionManagement() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4 mt-6 bg-white shadow-md rounded-xl sm:p-6">
+    <div className={`flex flex-col gap-6 p-4 mt-6 shadow-2xl rounded-xl sm:p-6 ${  darkmode ? "bg-gray-900 text-gray-400 " : " text-gray-700 border-blue-400 bg-[#ffffff]"}`}>
       {/* Header + Buttons */}
       <div className="flex flex-col justify-between gap-4 mb-4 sm:flex-row sm:items-center">
-        <h2 className="text-xl font-bold text-center text-gray-800 sm:text-left">
+        <h2 className="text-xl font-bold text-center sm:text-left">
           {t.Production_management}
         </h2>
 
@@ -157,7 +157,7 @@ export default function ProductionManagement() {
               setShowAddForm(!showAddForm);
               setShowUpdateForm(false);
             }}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 transition-colors border border-blue-400 rounded-lg hover:bg-blue-50"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-lg cursor-pointer "
           >
             <FiPlus /> {t.addNewProduct}
           </button>
@@ -167,14 +167,14 @@ export default function ProductionManagement() {
               setShowUpdateForm(!showUpdateForm);
               setShowAddForm(false);
             }}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 transition-colors border border-blue-400 rounded-lg hover:bg-blue-50"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm border rounded-lg cursor-pointer font-mediumtransition-colors"
           >
             <FiEdit3 /> {t.updateProduction}
           </button>
 
           <button
             onClick={handleDownloadReport}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 transition-colors border border-blue-400 rounded-lg hover:bg-blue-50"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm border rounded-lg cursor-pointer font-mediumtransition-colors"
           >
             <FiDownload /> {t.printReport}
           </button>
@@ -183,7 +183,7 @@ export default function ProductionManagement() {
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="p-3 mb-4 text-red-700 bg-red-100 border border-red-300 rounded-lg">
+        <div className={`p-3 mb-4 text-red-700 bg-red-100 border border-red-300 rounded-lg `}>
           {errorMessage}
         </div>
       )}
@@ -192,12 +192,12 @@ export default function ProductionManagement() {
       {showAddForm && (
         <form
           onSubmit={handleAdd}
-          className="grid grid-cols-1 gap-4 p-4 bg-blue-50 rounded-xl sm:grid-cols-2 lg:grid-cols-3"
+          className={`grid grid-cols-1 gap-4 p-4 rounded-xl sm:grid-cols-2 lg:grid-cols-3 ${darkmode ? "bg-gray-800 text-gray-600 ":"bg-blue-50 "}`}
         >
           <select
             name="name"
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 focus:ring-gray-800"
           >
             <option value="">{t.selectProduct}</option>
             {availableProducts.map((prod, i) => (
@@ -212,24 +212,24 @@ export default function ProductionManagement() {
             type="number"
             placeholder={t.targetPlaceholder}
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 focus:ring-gray-800"
           />
           <input
             name="startTime"
             type="datetime-local"
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 focus:ring-gray-800"
           />
           <input
             name="endTime"
             type="datetime-local"
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 focus:ring-gray-800"
           />
 
           <button
             type="submit"
-            className="w-full col-span-1 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 sm:col-span-2 lg:col-span-3"
+            className={`w-full col-span-1 py-2  rounded-lg  sm:col-span-2 lg:col-span-3 ${darkmode?" text-gray-300 bg-gray-950 hover:bg-gray-900":"text-white bg-blue-500 hover:bg-blue-600"}`}
           >
             {t.saveProduct}
           </button>
@@ -240,12 +240,12 @@ export default function ProductionManagement() {
       {showUpdateForm && productions.length > 0 && (
         <form
           onSubmit={handleUpdate}
-          className="grid grid-cols-1 gap-4 p-4 bg-blue-50 rounded-xl sm:grid-cols-2 lg:grid-cols-3"
+          className={`grid grid-cols-1 gap-4 p-4  rounded-xl sm:grid-cols-2 lg:grid-cols-3 ${darkmode?"bg-gray-900 text-gray-500":"bg-blue-50"}`}
         >
           <select
             name="productId"
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 "
           >
             <option value="">{t.selectProduct}</option>
             {productions.map((p) => (
@@ -260,11 +260,11 @@ export default function ProductionManagement() {
             type="number"
             placeholder={t.addProducedUnits}
             required
-            className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="p-2 border rounded-lg focus:ring-2 "
           />
           <button
             type="submit"
-            className="w-full col-span-1 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 sm:col-span-2 lg:col-span-3"
+            className={`w-full col-span-1 py-2  rounded-lg  sm:col-span-2 lg:col-span-3 ${darkmode?"text-gray-500 bg-gray-950 hover:bg-gray-900":"text-white bg-blue-500 hover:bg-blue-600"}`}
           >
             {t.updateProductionBtn}
           </button>
@@ -275,9 +275,9 @@ export default function ProductionManagement() {
       {productions.length > 0 && (
         <div className="w-full mt-6 print-area">
           {/* Desktop & Tablet */}
-          <div className="hidden overflow-x-auto border border-gray-200 shadow-sm lg:block rounded-xl">
-            <table className="min-w-full text-sm text-left text-gray-700 bg-white">
-              <thead className="text-xs text-gray-800 uppercase bg-gray-100">
+          <div className="hidden overflow-x-auto border shadow-sm lg:block rounded-xl">
+            <table className={`min-w-full text-sm text-left  ${darkmode?"text-gray-500 bg-gray-800":"text-gray-700 bg-white"}`}>
+              <thead className={`text-xs uppercase ${darkmode?"bg-gray-700 text-gray-300":"bg-white"}`}>
                 <tr>
                   {Object.values(t.tableHeaders).map((header) => (
                     <th

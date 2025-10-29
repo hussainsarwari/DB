@@ -138,10 +138,21 @@ export const translations = {
     toDate: "To Date:",
     applyFilter: "Apply Filter",
     reset: "Reset",
+
+
+      darkMode: "Dark Mode",
+  lightMode: "Light Mode",
+
+
     /////////////////////////////////////////////////////////////////
   },
 
   fa: {
+
+
+
+      darkMode: "حالت تیره",
+  lightMode: "حالت روشن",
     dashboard: "دشبورد",
     home: "صفحه اصلی",
     Production_management: "مدیریت تولید",

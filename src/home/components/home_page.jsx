@@ -2,6 +2,7 @@ import React, { lazy } from "react";
 import Homepagefillter from "./Homepagefillter";
 import HomePageCard from "./homePageCard";
 import ProductionProgress from "./ProductionProgress";
+import { useLanguage } from "../../Provider/LanguageContext"; // 🔹 اضافه شد
 
 // 🔹 Lazy load همه‌ی کامپوننت‌های سنگین
 const CapacityChart = lazy(() => import("./charts/capacity"));
@@ -16,31 +17,27 @@ const CustomerReceivables = lazy(() => import("./tables/Customer_Receivables"));
 const ProductionTable = lazy(() => import("./tables/ProductionTable"));
 
 export default React.memo(function HomePage() {
-  return (
-    <div className="flex flex-col min-h-screen gap-8 p-6 text-gray-700 bg-gray-50 print-area">
-      {/* بخش فیلتر و کارت‌ها */}
-          <ProductionProgress />
-      <Homepagefillter />
-       
+  const { darkmode } = useLanguage(); // 🔹 حالت دارک را از Context می‌گیریم
 
-     
-      <HomePageCard /> 
+  return (
+    <div
+      className={`flex flex-col min-h-screen gap-8 p-6 transition-colors duration-500 ${
+        darkmode ? "bg-[#06131e] text-gray-100" : "bg-gray-50 text-gray-700"
+      } print-area`}
+    >
+      <ProductionProgress />
+      <Homepagefillter />
+      <HomePageCard />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CapacityChart />
         <CustomerReceivables />
-
         <InventoryTrend />
         <MaterialConsumptionChart />
         <Expenses />
- 
-
         <MultiProduction />
-
-
       </div>
-        <ProductionTable />
-    
-        <DashboardTables />
+      <ProductionTable />
+      <DashboardTables />
     </div>
   );
 });
