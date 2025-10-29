@@ -179,7 +179,7 @@ const menuItems = [
         <div
           className={`absolute bottom-16 ${
             lang === "eng" ? "left-16" : "right-16"
-          } bg-[#165078] text-gray-400 rounded-xl shadow-lg p-3 w-52 transition-opacity duration-300`}
+          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-lg p-3 w-52 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li className="hover:bg-[#164070] px-2 py-1 rounded cursor-pointer">
