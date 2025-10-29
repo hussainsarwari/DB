@@ -20,7 +20,7 @@ const menuItems = [
   { key: "buy", label: "buy", icon: <BiMoneyWithdraw size={18} /> },
   { key: "suppliers", label: "suppliers", icon: <UserCircle size={18} /> },
   { key: "customer", label: "customer", icon: <CgBoy size={18} /> },
-  { key: "expensive", label: "expensive", icon: <FaMoneyBill size={18} /> },
+  { key: "expensive", label: "expensives", icon: <FaMoneyBill size={18} /> },
   { key: "stock", label: "stock", icon: <Box size={18} /> },
   { key: "staff", label: "staff", icon: <ClipboardEdit size={18} /> },
   { key: "Fixed_asset", label: "Fixed_asset", icon: <MdWebAsset size={18} /> },
@@ -155,17 +155,17 @@ const menuItems = [
         <div
           className={`absolute bottom-60 ${
             lang === "eng" ? "left-16" : "right-16"
-          } bg-[#165078] text-gray-400 rounded-xl shadow-lg p-3 w-40 transition-opacity duration-300`}
+          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-xl p-3 w-40 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li
-              className="cursor-pointer hover:bg-[#164070] rounded px-2 py-1"
+              className={`px-2 py-1 rounded cursor-pointer ${darkmode? " hover:bg-gray-600":" hover:bg-blue-600 hover:text-white"}`}
               onClick={() => setLang("eng")}
             >
               {t.english}
             </li>
             <li
-              className="cursor-pointer hover:bg-[#164070] rounded px-2 py-1"
+              className={`px-2 py-1 rounded cursor-pointer ${darkmode? " hover:bg-gray-600":" hover:bg-blue-600 hover:text-white"}`}
               onClick={() => setLang("fa")}
             >
               {t.dari}
