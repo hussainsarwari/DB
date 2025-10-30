@@ -5,8 +5,28 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+
+    <style>
+::-webkit-scrollbar {
+  width: 0px; /* عرض نوار اسکرول عمودی */
+  height: 0px; /* ارتفاع نوار اسکرول افقی */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* مسیر پشت اسکرول */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* خود بخش متحرک */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* هنگام hover */
+}
+    </style>
   </head>
-  <body>
+  <body >
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

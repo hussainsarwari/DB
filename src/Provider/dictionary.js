@@ -107,10 +107,7 @@ export const translations = {
 
     days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
 
-
-
-
-     financialTransactions: "Financial Transactions",
+    financialTransactions: "Financial Transactions",
     item: "Item",
     type: "Type",
     amount: "Amount",
@@ -119,7 +116,6 @@ export const translations = {
 
     supplierPayments: "Supplier Payments",
     supplier: "Supplier",
-
 
     downtimeDetails: "Downtime Details",
     machine: "Machine",
@@ -139,10 +135,45 @@ export const translations = {
     applyFilter: "Apply Filter",
     reset: "Reset",
 
+    darkMode: "Dark Mode",
+    lightMode: "Light Mode",
 
-      darkMode: "Dark Mode",
-  lightMode: "Light Mode",
+    reportTitle: "Production Details Report",
 
+    productionTime: "Production Time (hours)",
+    rawMaterial: "Raw Material (kg)",
+    laborCount: "Labor Count",
+    materialCost: "Material Cost ($)",
+    laborCost: "Labor Cost ($)",
+    energyCost: "Energy Cost ($)",
+    totalCost: "Total Cost ($)",
+    productionTimeMobile: "Production Time",
+    rawMaterialMobile: "Raw Material",
+    workersMobile: "Workers",
+    materialCostMobile: "Material Cost",
+    laborCostMobile: "Labor Cost",
+    energyCostMobile: "Energy Cost",
+    totalPriceMobile: "Total Cost",
+
+     productListTitle: "Product List",
+    category: "Category",
+    costPrice: "Cost Price",
+    salePrice: "Sale Price",
+    actions: "Actions",
+    edit: "Edit",
+    delete: "Delete",
+    
+    materials: "Materials",
+
+    materialName: "Material name",
+
+    unit: "Unit",
+    productionPerBatch: "Production per batch",
+    finishedUnit: "Finished unit",
+    description: "Description / Notes",
+    secondaryDescription: "Secondary description",
+
+    save: "Save",
 
     /////////////////////////////////////////////////////////////////
   },
@@ -151,8 +182,25 @@ export const translations = {
 
 
 
-      darkMode: "حالت تیره",
-  lightMode: "حالت روشن",
+      reportTitle: "گزارش جزئیات تولید",
+    dateRange: "از تاریخ {from} تا {to}",
+    product: "محصول",
+    productionTime: "زمان تولید (ساعت)",
+    rawMaterial: "مواد اولیه (کیلوگرم)",
+    laborCount: "تعداد کارگر",
+    materialCost: "هزینه مواد ($)",
+    laborCost: "هزینه نیروی کار ($)",
+    energyCost: "هزینه انرژی ($)",
+    totalCost: "قیمت تمام‌شده ($)",
+    productionTimeMobile: "زمان تولید",
+    rawMaterialMobile: "مواد اولیه",
+    workersMobile: "کارگران",
+    materialCostMobile: "هزینه مواد",
+    laborCostMobile: "هزینه کار",
+    energyCostMobile: "هزینه انرژی",
+    totalPriceMobile: "قیمت تمام‌شده",
+    darkMode: "حالت تیره",
+    lightMode: "حالت روشن",
     dashboard: "دشبورد",
     home: "صفحه اصلی",
     Production_management: "مدیریت تولید",
@@ -199,7 +247,7 @@ export const translations = {
     grossProfit: "مفاد ناخالص",
     expenses: "مصارف",
     finalBalance: "بیلانس نهایی",
-    dateRange: "بازه تاریخی",
+ 
 
     addNewProduct: "افزودن محصول جدید",
     updateProduction: "ثبت تولید امروز",
@@ -266,10 +314,7 @@ export const translations = {
       "یکشنبه",
     ],
 
-
-
-
-     financialTransactions: "معاملات مالی",
+    financialTransactions: "معاملات مالی",
     item: "مورد",
     type: "نوع",
     amount: "مبلغ",
@@ -279,7 +324,6 @@ export const translations = {
     supplierPayments: "پرداخت‌های تأمین‌کننده",
     supplier: "تأمین‌کننده",
 
-
     downtimeDetails: "جزئیات توقف ماشین",
     machine: "ماشین",
     startTime: "زمان شروع",
@@ -288,7 +332,7 @@ export const translations = {
     reason: "دلیل",
 
     productionReport: "گزارش تولید",
-    product: "محصول",
+
     daily: "روزانه",
     weekly: "هفتگی",
     monthly: "ماهانه",
@@ -297,5 +341,28 @@ export const translations = {
     toDate: "تا تاریخ:",
     applyFilter: "اعمال فیلتر",
     reset: "بازنشانی",
+
+
+
+       productListTitle: "لیست محصولات",
+
+    category: "دسته‌بندی",
+
+    costPrice: "قیمت تمام‌شده",
+    salePrice: "قیمت فروش",
+    actions: "عملیات",
+    edit: "ویرایش",
+    delete: "حذف",
+    materials: "مواد اولیه",
+ 
+    materialName: "نام ماده",
+ 
+    unit: "واحد",
+    productionPerBatch: "تولید برای هر بچ",
+    finishedUnit: "واحد محصول نهایی",
+    description: "توضیحات / یادداشت",
+    secondaryDescription: "توضیحات دوم",
+  
+    save: "ذخیره",
   },
 };

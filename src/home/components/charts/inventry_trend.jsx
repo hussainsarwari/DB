@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import Loading from "../Loading";
+import Loading from "../../../component/loading/Loading";
 import { useLanguage } from "../../../Provider/LanguageContext";
 
 export default React.memo(function ProductionShare() {
@@ -10,7 +10,7 @@ export default React.memo(function ProductionShare() {
   const areaSeries = [{ name: t.inventoryUnits, data: [200, 180, 190, 170, 160, 180, 200] }];
 
   const areaOptions = {
-    chart: { id: "area-chart", toolbar: { show: true }, zoom: { enabled: true } },
+    chart: { id: "area-chart", toolbar: { show: true }, zoom: { enabled: false } },
     xaxis: { categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
     stroke: { curve: "smooth" },
     fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
