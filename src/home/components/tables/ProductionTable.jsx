@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../Loading";
+import Loading from "../../../component/loading/Loading";
 import { useLanguage } from "../../../Provider/LanguageContext";
 
 const productionData = [
@@ -12,7 +12,13 @@ const productionData = [
 
 export default React.memo(function ProductionTable() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { t ,darkmode} = useLanguage();
+  const { t, darkmode } = useLanguage();
+
+  // 🔹 فرضاً بازه تاریخ گزارش (می‌تونی بعداً از API بگیری)
+  const [dateRange, setDateRange] = useState({
+    from: "2025-10-01",
+    to: "2025-10-29",
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 1000);
@@ -28,12 +34,32 @@ export default React.memo(function ProductionTable() {
   }
 
   return (
-    <div className={`p-4 overflow-auto transition-all duration-700  shadow-2xl rounded-xl h-[440px] ${darkmode?"bg-gray-900":"bg-white"}`}>
-      <h2 className="py-3 mb-4 text-xl font-bold text-center text-gray-400">
+    <div
+      className={`p-4 overflow-auto transition-all duration-700 shadow-2xl rounded-xl h-[460px] ${
+        darkmode ? "bg-gray-900" : "bg-white"
+      }`}
+    >
+      {/* 🔹 عنوان گزارش */}
+      <h2
+        className={`py-2 mb-1 text-xl font-bold text-center ${
+          darkmode ? "text-gray-300" : "text-gray-600"
+        }`}
+      >
         {t.productionReport}
       </h2>
+
+      {/* 🔹 نمایش بازه تاریخی گزارش */}
+      <p
+        className={`text-center pb-4 text-sm ${
+          darkmode ? "text-gray-400" : "text-gray-500"
+        }`}
+      >
+        {t.fromDate} <b>{dateRange.from}</b> {t.toDate} <b>{dateRange.to}</b>
+      </p>
+
+      {/* 🔹 جدول گزارش */}
       <table className="min-w-full divide-y divide-gray-200 table-auto">
-        <thead className={`${darkmode? "bg-gray-800":"bg-gray-100"}`}>
+        <thead className={`${darkmode ? "bg-gray-800" : "bg-gray-100"}`}>
           <tr>
             <th className="px-4 py-2 text-center text-gray-400">{t.product}</th>
             <th className="px-4 py-2 text-center text-gray-400">{t.daily}</th>
@@ -43,7 +69,12 @@ export default React.memo(function ProductionTable() {
         </thead>
         <tbody className="divide-y divide-gray-400">
           {productionData.map((row, idx) => (
-            <tr key={idx} className={` ${darkmode?"hover:bg-gray-500":"hover:bg-blue-50"}`}>
+            <tr
+              key={idx}
+              className={`${
+                darkmode ? "hover:bg-gray-500 text-gray-400" : "hover:bg-blue-50 text-gray-800"
+              }`}
+            >
               <td className="px-4 py-2 text-center">{row.product}</td>
               <td className="px-4 py-2 text-center">{row.daily}</td>
               <td className="px-4 py-2 text-center">{row.weekly}</td>

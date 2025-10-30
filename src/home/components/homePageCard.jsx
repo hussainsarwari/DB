@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Loading from "./Loading";
+import Loading from "../../component/loading/Loading";
+import Swal from "sweetalert2";
 import {
   FiShoppingCart,
   FiDollarSign,
@@ -8,6 +9,7 @@ import {
   FiCreditCard,
   FiPackage,
   FiActivity,
+  FiDownload,
   FiBarChart2,
 } from "react-icons/fi";
 import { useLanguage } from "../../Provider/LanguageContext";
@@ -18,6 +20,21 @@ export default function HomePageCard() {
   const [summaryCards, setSummaryCards] = useState([]);
   const [detailsGroups, setDetailsGroups] = useState([]);
   const [isLoaded, setisLoaded] = useState(true);
+ // === Print ===
+  const handleDownloadReport = () => {
+    Swal.fire({
+      title: t.printTitle,
+      text: t.printText,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: t.printConfirm,
+      cancelButtonText: t.cancel,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTimeout(() => window.print(), 300);
+      }
+    });
+  };
 
   useEffect(() => {
     // شبیه‌سازی دریافت داده‌ها از سرور
@@ -110,9 +127,25 @@ export default function HomePageCard() {
             <p className="mt-2 text-2xl font-bold ">{card.value}</p>
           </div>
         ))}
-      </div>
 
+        
+        
+      </div>
+      
+  <button
+            onClick={handleDownloadReport}
+            className={`flex justify-center p-4 cursor-pointer hover:scale-105   shadow-2xl rounded-xl text-center ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
+          >
+             {t.printReport}
+          </button>
+  {/* <button
+            onClick={handleDownloadReport}
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-lg cursor-pointer font-mediumtransition-colors"
+          >
+            <FiDownload /> {t.printReport}
+          </button> */}
       {/* کارت جزئیات با گروه‌بندی */}
+      
       {detailsGroups.map((group, idx) => (
         <div
           key={idx}
@@ -146,6 +179,7 @@ export default function HomePageCard() {
           </div>
         </div>
       ))}
+      
     </div>
   );
 }

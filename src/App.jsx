@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "./Login/Login";
 import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from './Login/ResetPasswor'
-import DashboadMainPage from './home/mainPage'
+import Home from './home/mainPage'
+import Production_management from './production_management/main_page'
 
 export default function App() {
   return (
@@ -10,7 +11,8 @@ export default function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/Reset-password" element={<ResetPassword/>}/>
-      <Route path="/dashboard-main-page" element={<DashboadMainPage />}/>
+      <Route path="/home" element={<Home />}/>
+      <Route path="/Production_management" element={<Production_management />}/>
 
     </Routes>
   );

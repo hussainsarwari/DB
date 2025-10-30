@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../Loading";
+import Loading from "../../../component/loading/Loading";
 import { useLanguage } from "../../../Provider/LanguageContext";
 
 const limitToTen = (data) => data.slice(0, 10);

@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "../../Provider/LanguageContext";
+import { useLanguage } from "../Provider/LanguageContext";
 
 export default function HomePageControls({ onFilter, onReset }) {
   const { t } = useLanguage();

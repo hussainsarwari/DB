@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     console.log({ email, password, rememberMe });
     if(email=="test@gmail.com" && password==123){
-      navigate("/dashboard-main-page");
+      navigate("/home");
     }
   };
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
           <button onClick={handleGoogleLogin} className="flex items-center justify-center gap-3 py-3 transition border border-gray-300 rounded-xl hover:bg-gray-50">
             <FaGoogle className="text-red-500" /> Continue with Google
           </button>
-          <button onClick={facebookLogin} className="flex  items-center justify-center gap-3 py-3 transition border border-gray-300 rounded-xl hover:bg-gray-50">
+          <button onClick={facebookLogin} className="flex items-center justify-center gap-3 py-3 transition border border-gray-300 rounded-xl hover:bg-gray-50">
             <FaFacebookF className="text-blue-600" /> Continue with Facebook
           </button>
         </div>

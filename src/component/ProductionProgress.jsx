@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FiPlus, FiEdit3, FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
-import "../components/print.css";
-import { useLanguage } from "../../Provider/LanguageContext";
+import "../home/components/print.css";
+import { useLanguage } from "../Provider/LanguageContext";
 
 export default function ProductionManagement() {
   const { t,darkmode } = useLanguage();
@@ -127,22 +127,7 @@ export default function ProductionManagement() {
     });
   };
 
-  // === Print ===
-  const handleDownloadReport = () => {
-    Swal.fire({
-      title: t.printTitle,
-      text: t.printText,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: t.printConfirm,
-      cancelButtonText: t.cancel,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setTimeout(() => window.print(), 300);
-      }
-    });
-  };
-
+ 
   return (
     <div className={`flex flex-col gap-6 p-4 mt-6 shadow-2xl rounded-xl sm:p-6 ${  darkmode ? "bg-gray-900 text-gray-400 " : " text-gray-700 border-blue-400 bg-[#ffffff]"}`}>
       {/* Header + Buttons */}
@@ -172,12 +157,6 @@ export default function ProductionManagement() {
             <FiEdit3 /> {t.updateProduction}
           </button>
 
-          <button
-            onClick={handleDownloadReport}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm border rounded-lg cursor-pointer font-mediumtransition-colors"
-          >
-            <FiDownload /> {t.printReport}
-          </button>
         </div>
       </div>
 
