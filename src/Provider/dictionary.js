@@ -66,13 +66,13 @@ export const translations = {
     printConfirm: "Yes, print it",
     cancel: "Cancel",
     ok: "OK",
-
+    unit: "unit",
     selectProduct: "Select Product",
     targetPlaceholder: "Target (units)",
     addProducedUnits: "Add Produced Units",
     saveProduct: "Save Product",
     updateProductionBtn: "Update Production",
-
+    saved: "Saved successfully",
     tableHeaders: {
       product: "Product",
       produced: "Produced",
@@ -155,19 +155,18 @@ export const translations = {
     energyCostMobile: "Energy Cost",
     totalPriceMobile: "Total Cost",
 
-     productListTitle: "Product List",
+    productListTitle: "Product List",
     category: "Category",
     costPrice: "Cost Price",
     salePrice: "Sale Price",
     actions: "Actions",
     edit: "Edit",
     delete: "Delete",
-    
+
     materials: "Materials",
 
     materialName: "Material name",
 
-    unit: "Unit",
     productionPerBatch: "Production per batch",
     finishedUnit: "Finished unit",
     description: "Description / Notes",
@@ -175,14 +174,82 @@ export const translations = {
 
     save: "Save",
 
+    addProduct: "Add New Product",
+    add: "Add",
+    select: "Select",
+    selectMaterial: "Select Material",
+    qty: "Qty",
+    group: "Group",
+    productName: "Product Name",
+    rawMaterials: "Raw Materials",
+    autoCostPrice: "Auto Cost Price",
+    sellingPrice: "Selling Price",
+    fillAllFields: "Please fill all fields",
+
+    // Groups
+    groups: {
+      food: "Food",
+      beverage: "Beverage",
+      cleaning: "Cleaning",
+      electronics: "Electronics",
+    },
+
+    // Units
+    units: {
+      kg: "Kg",
+      liters: "Liters",
+      pieces: "Pieces",
+      box: "Box",
+      meter: "Meter",
+      pack: "Pack",
+      // فارسی: "کیلوگرم"
+      gram: "Gram", // فارسی: "گرم"
+      liter: "Liter", // فارسی: "لیتر"
+      // فارسی: "متر"
+      piece: "Piece", // فارسی: "عدد"
+    },
+
+    // Messages
+    messages: {
+      warning: "Please fill all fields",
+      success: "Product Added!",
+    },
+
+    // Placeholders
+    placeholders: {
+      examplePrice: "e.g. 250",
+      quantity: "Qty",
+    },
+    Materials: {
+      flour: "Flour", // فارسی: "آرد"
+      sugar: "Sugar", // فارسی: "شکر"
+      oil: "Oil", // فارسی: "روغن"
+      water: "Water", // فارسی: "آب"
+      salt: "Salt", // فارسی: "نمک"
+      plastic: "Plastic", // فارسی: "پلاستیک"
+      label: "Label", // فارسی: "لیبل"
+    },
+
+    initialProductTable: "Initial Product Table",
+    material: "Material",
+    deleteConfirm: "Delete this product?",
+    editProduct: "Edit Product",
+
+
+
+
+     kpis: {
+      dailyProduction: "Daily Production",
+      materialUsed: "Material Used (kg)",
+      laborEfficiency: "Labor Efficiency (%)",
+      energyCost: "Energy Cost ($)",
+    }
+
     /////////////////////////////////////////////////////////////////
   },
 
   fa: {
-
-
-
-      reportTitle: "گزارش جزئیات تولید",
+    reportTitle: "گزارش جزئیات تولید",
     dateRange: "از تاریخ {from} تا {to}",
     product: "محصول",
     productionTime: "زمان تولید (ساعت)",
@@ -247,7 +314,6 @@ export const translations = {
     grossProfit: "مفاد ناخالص",
     expenses: "مصارف",
     finalBalance: "بیلانس نهایی",
- 
 
     addNewProduct: "افزودن محصول جدید",
     updateProduction: "ثبت تولید امروز",
@@ -342,9 +408,7 @@ export const translations = {
     applyFilter: "اعمال فیلتر",
     reset: "بازنشانی",
 
-
-
-       productListTitle: "لیست محصولات",
+    productListTitle: "لیست محصولات",
 
     category: "دسته‌بندی",
 
@@ -354,15 +418,84 @@ export const translations = {
     edit: "ویرایش",
     delete: "حذف",
     materials: "مواد اولیه",
- 
+
     materialName: "نام ماده",
- 
+
     unit: "واحد",
     productionPerBatch: "تولید برای هر بچ",
     finishedUnit: "واحد محصول نهایی",
     description: "توضیحات / یادداشت",
     secondaryDescription: "توضیحات دوم",
-  
+
     save: "ذخیره",
+
+    // عمومی
+    addProduct: "افزودن محصول جدید",
+    add: "افزودن",
+    select: "انتخاب کنید",
+    selectMaterial: "انتخاب مواد",
+    qty: "مقدار",
+    group: "گروپ",
+    productName: "نام محصول",
+    rawMaterials: "مواد اولیه",
+    autoCostPrice: "قیمت تمام‌شده (خودکار)",
+    sellingPrice: "قیمت فروش",
+    fillAllFields: "تمام فیلدها را پر کنید",
+
+    // دسته‌بندی‌ها
+    groups: {
+      food: "مواد غذایی",
+      beverage: "نوشیدنی‌ها",
+      cleaning: "مواد شوینده",
+      electronics: "لوازم الکترونیکی",
+    },
+
+    // واحدها
+    units: {
+      kg: "کیلوگرم",
+      liters: "لیتر",
+      pieces: "عدد",
+      box: "جعبه",
+      meter: "متر",
+      pack: "بسته",
+      gram: "گرم",
+      liter: "لیتر",
+      piece: "عدد",
+    },
+    saved: "با موفقیت ذخیره شد",
+    // پیام‌ها
+    messages: {
+      warning: "تمام فیلدها را پر کنید",
+      success: "محصول افزوده شد!",
+    },
+
+    // Placeholder
+    placeholders: {
+      examplePrice: "مثلاً 250",
+      quantity: "مقدار",
+    },
+    Materials: {
+      flour: "آرد",
+      sugar: "شکر",
+      oil: "روغن",
+      water: "آب",
+      salt: "نمک",
+      plastic: "پلاستیک",
+      label: "لیبل",
+    },
+
+    initialProductTable: "جدول محصولات اولیه",
+    material: "مواد اولیه",
+    deleteConfirm: "حذف شود؟",
+    editProduct: "ویرایش محصول",
+
+
+
+     kpis: {
+      dailyProduction: "تولید روزانه",
+      materialUsed: "مواد مصرفی (کیلوگرم)",
+      laborEfficiency: "بازده نیروی کار (%)",
+      energyCost: "هزینه انرژی ($)",
+    }
   },
 };

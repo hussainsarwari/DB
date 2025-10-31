@@ -4,6 +4,7 @@ import ForgotPassword from "./Login/ForgotPassword";
 import ResetPassword from './Login/ResetPasswor'
 import Home from './home/mainPage'
 import Production_management from './production_management/main_page'
+import SellPage from './sell/main'
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Route path="/Reset-password" element={<ResetPassword/>}/>
       <Route path="/home" element={<Home />}/>
       <Route path="/Production_management" element={<Production_management />}/>
+      <Route path="/sell" element={<SellPage />}/>
 
     </Routes>
   );

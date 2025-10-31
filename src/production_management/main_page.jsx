@@ -11,16 +11,16 @@ import InitiaProduct from './component/initialProduct'
 import ProductionProgress from "../component/ProductionProgress";
 
 export default function Dashboard() {
-  const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen } = useLanguage();
+  const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen ,t} = useLanguage();
 
   const [loading, setLoading] = useState(true);
 
   // داده‌های فرضی برای KPI
   const kpis = [
-    { title: "Daily Production", value: 1200 },
-    { title: "Material Used (kg)", value: 4500 },
-    { title: "Labor Efficiency (%)", value: 87 },
-    { title: "Energy Cost ($)", value: 3000 },
+   { title: t.kpis.dailyProduction, value: 1200 },
+    { title: t.kpis.materialUsed, value: 4500 },
+    { title: t.kpis.laborEfficiency, value: 87 },
+    { title: t.kpis.energyCost, value: 3000 },
   ];
 
   useEffect(() => {
