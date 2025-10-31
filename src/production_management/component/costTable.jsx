@@ -35,14 +35,18 @@ export default React.memo(function ProductionDetailTable() {
         {t.reportTitle}
       </h2>
 
-      <p className={`text-center pb-4 text-sm ${darkmode ? "text-gray-400" : "text-gray-500"}`}>
-        {t.startdate +t.enddate}
+       <p
+        className={`text-center pb-4 text-sm ${
+          darkmode ? "text-gray-400" : "text-gray-500"
+        }`}
+      >
+        {t.fromDate} <b>{dateRange.from}</b> {t.toDate} <b>{dateRange.to}</b>
       </p>
 
       {/* جدول دسکتاپ */}
       <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full text-sm divide-y divide-gray-200">
-          <thead className={`${darkmode ? "bg-gray-800" : "bg-gray-100"}`}>
+          <thead className={`${darkmode ? "bg-gray-900" : "bg-gray-100"}`}>
             <tr>
               <th className="px-4 py-2 text-center text-gray-400">{t.product}</th>
               <th className="px-4 py-2 text-center text-gray-400">{t.productionTime}</th>
@@ -77,7 +81,7 @@ export default React.memo(function ProductionDetailTable() {
     <div
       key={idx}
       className={`rounded-2xl p-5 shadow-lg transition transform hover:-translate-y-1 hover:shadow-2xl duration-300 ${
-        darkmode ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"
+        darkmode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
       }`}
     >
       <h3 className="pb-2 mb-4 text-lg font-bold border-b border-gray-300">

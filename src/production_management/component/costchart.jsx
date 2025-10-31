@@ -16,7 +16,7 @@ export default function ProductionChart() {
   const chartOptions = {
     chart: {
       type: "bar",
-      toolbar: { show: false },
+      toolbar: { show: true },
       foreColor: darkmode ? "#E5E7EB" : "#111827",
     },
     plotOptions: {
@@ -43,7 +43,6 @@ export default function ProductionChart() {
     legend: {
       labels: { colors: darkmode ? "#E5E7EB" : "#111827" }
     },
-    theme: { mode: darkmode ? "dark" : "light" }
   };
 
   const chartSeries = [
@@ -54,8 +53,8 @@ export default function ProductionChart() {
   ];
 
   return (
-    <div className={`p-4 rounded-2xl shadow-lg transition-all ${darkmode ? "bg-gray-800" : "bg-white"}`}>
-      <h2 className={`text-lg font-bold mb-4 text-center ${darkmode ? "text-gray-200" : "text-gray-700"}`}>
+    <div className={`p-4 rounded-2xl shadow-lg transition-all ${darkmode ? "bg-gray-900" : "bg-white"}`}>
+      <h2 className={`text-lg p-6 font-bold mb-4 text-center ${darkmode ? "text-gray-200" : "text-gray-700"}`}>
         {t.reportTitle}
       </h2>
       <Chart options={chartOptions} series={chartSeries} type="bar" height={350} />

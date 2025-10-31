@@ -4,11 +4,11 @@ import Header from "../component/header/header";
 import Sidebar from "../component/sidebar/sidebar";
 import Loading from "../component/loading/react_loader_spinner";
 import KPIcard from "./component/KPIcard";
-import ProductionChart from "./component/ProductionChart";
 import Filters from "./component/Fillters";
 import ProductionDetailTable from "./component/costTable";
 import CostChart from "./component/costchart";
 import InitiaProduct from './component/initialProduct'
+import ProductionProgress from "../component/ProductionProgress";
 
 export default function Dashboard() {
   const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen } = useLanguage();
@@ -31,7 +31,7 @@ export default function Dashboard() {
   return (
     <div
       className={`flex h-screen relative ${
-        darkmode ? "bg-gray-900" : "bg-gray-100"
+      darkmode ? "bg-[#06131e] text-gray-100" : "bg-gray-50"
       } ${dir}`}
     >
       {/* Mobile Overlay */}
@@ -55,7 +55,7 @@ export default function Dashboard() {
           {loading && (
             <div
               className={`absolute inset-0 z-50 flex items-center justify-center ${
-                darkmode ? "bg-gray-800/70" : "bg-gray-100/70"
+                darkmode ? "bg-gray-900/70" : "bg-gray-100/70"
               }`}
             >
               <Loading />
@@ -76,21 +76,22 @@ export default function Dashboard() {
                 ))}
               </div>
 
+
+ <ProductionProgress />
               {/* Filters */}
               <Filters />
 
               {/* Production Charts */}
-              {/* <ProductionChart darkmode={darkmode} /> */}
-              <InitiaProduct 
-              />
+            
+              <InitiaProduct />
 
               {/* Tables */}
 
-              {/* <ProductionDetailTable /> */}
+              <ProductionDetailTable />
 
               {/* cost chart */}
               
-              {/* <CostChart /> */}
+              <CostChart />
             </div>
           )}
         </main>
