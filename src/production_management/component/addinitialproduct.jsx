@@ -1,80 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "../../Provider/LanguageContext";
 import { X, Save, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 
-export default function EditInitialProduct({ product, onClose, onSave }) {
+export default function AddNewProduct({ onClose, onSave }) {
   const { lang, darkmode } = useLanguage();
 
-  // گزینه‌های پیش‌فرض
+  // گزینه‌ها
   const groupOptions = ["Food", "Beverage", "Cleaning", "Electronics"];
-  const unitOptions = ["Kg", "Liters", "Pieces", "Box"];
+  const unitOptions = ["Kg", "Liters", "Pieces", "Box", "Meter", "Pack"];
+
+  // لیست مواد اولیه و قیمت‌های فرضی آنها
   const materialOptions = [
-    "Flour",
-    "Sugar",
-    "Oil",
-    "Water",
-    "Salt",
-    "Plastic",
-    "Label",
+    { name: "Flour", price: 20 },
+    { name: "Sugar", price: 15 },
+    { name: "Oil", price: 30 },
+    { name: "Water", price: 5 },
+    { name: "Salt", price: 10 },
+    { name: "Plastic", price: 25 },
+    { name: "Label", price: 8 },
   ];
 
-  // ✅ گزینه‌های واحد اندازه‌گیری مواد اولیه
-  const materialUnitOptions = ["Kg", "Gram", "Liter", "Meter", "Piece", "Box", "Pack"];
-
-  const [editedProduct, setEditedProduct] = useState({
-    ...product,
-    materials:
-      product.materials ||
-      Array.from({ length: 1 }, () => ({
-        name: "",
-        qty: "",
-        unit: "",
-      })),
+  const [product, setProduct] = useState({
+    name: "",
+    group: "",
+    unit: "",
+    costPrice: 0,
+    sellingPrice: "", // ✅ قیمت فروش
+    materials: [{ name: "", qty: "", unit: "" }], // ✅ واحد اضافه شد
   });
 
+  // تغییر عمومی
   const handleChange = (key, value) => {
-    setEditedProduct((prev) => ({ ...prev, [key]: value }));
+    setProduct((prev) => ({ ...prev, [key]: value }));
   };
 
+  // تغییر در مواد اولیه
   const handleMaterialChange = (index, field, value) => {
-    const newMaterials = [...editedProduct.materials];
+    const newMaterials = [...product.materials];
     newMaterials[index][field] = value;
-    setEditedProduct((prev) => ({ ...prev, materials: newMaterials }));
+    setProduct((prev) => ({ ...prev, materials: newMaterials }));
   };
 
+  // افزودن مواد اولیه جدید
   const addMaterial = () => {
-    setEditedProduct((prev) => ({
+    setProduct((prev) => ({
       ...prev,
       materials: [...prev.materials, { name: "", qty: "", unit: "" }],
     }));
   };
 
+  // حذف مواد اولیه
   const removeMaterial = (index) => {
-    setEditedProduct((prev) => ({
+    setProduct((prev) => ({
       ...prev,
       materials: prev.materials.filter((_, i) => i !== index),
     }));
   };
 
+  // محاسبه خودکار قیمت تمام‌شده
+  useEffect(() => {
+    const total = product.materials.reduce((sum, m) => {
+      const mat = materialOptions.find((x) => x.name === m.name);
+      if (mat && m.qty) {
+        return sum + mat.price * parseFloat(m.qty || 0);
+      }
+      return sum;
+    }, 0);
+    setProduct((prev) => ({ ...prev, costPrice: total.toFixed(2) }));
+  }, [product.materials]);
+
+  // ارسال نهایی
   const handleSubmit = (e) => {
     e.preventDefault();
-    const finalProduct = { ...editedProduct };
 
-    // تبدیل مواد اولیه به ساختار قابل ذخیره
-    editedProduct.materials.forEach((m, i) => {
-      finalProduct[`material${i + 1}`] = m.name;
-      finalProduct[`material${i + 1}Qty`] = `${m.qty}${m.unit ? m.unit : ""}`;
-    });
-    delete finalProduct.materials;
+    if (!product.name || !product.group || !product.unit) {
+      Swal.fire({
+        icon: "warning",
+        title: lang === "fa" ? "تمام فیلدها را پر کنید" : "Please fill all fields",
+        background: darkmode ? "#1F2937" : "#fff",
+        color: darkmode ? "#fff" : "#000",
+      });
+      return;
+    }
 
-    onSave(finalProduct);
+    onSave(product);
     onClose();
 
     Swal.fire({
       icon: "success",
-      title: lang === "fa" ? "ذخیره شد!" : "Saved!",
+      title: lang === "fa" ? "محصول افزوده شد!" : "Product Added!",
       timer: 1500,
       showConfirmButton: false,
       background: darkmode ? "#1F2937" : "#fff",
@@ -106,7 +122,7 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
                 darkmode ? "text-gray-100" : "text-gray-800"
               }`}
             >
-              {lang === "fa" ? "ویرایش محصول" : "Edit Product"}
+              {lang === "fa" ? "افزودن محصول جدید" : "Add New Product"}
             </h2>
             <button
               onClick={onClose}
@@ -124,18 +140,13 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Product Name & Group */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* Product Name */}
               <div className="flex flex-col">
-                <label
-                  className={`mb-1 font-medium ${
-                    darkmode ? "text-gray-200" : "text-gray-700"
-                  }`}
-                >
+                <label className="mb-1 font-medium text-gray-700 dark:text-gray-200">
                   {lang === "fa" ? "نام محصول" : "Product Name"}
                 </label>
                 <input
                   type="text"
-                  value={editedProduct.name || ""}
+                  value={product.name}
                   onChange={(e) => handleChange("name", e.target.value)}
                   className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                     darkmode ? "bg-gray-700 text-gray-100" : ""
@@ -144,25 +155,19 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
                 />
               </div>
 
-              {/* Group Dropdown */}
               <div className="flex flex-col">
-                <label
-                  className={`mb-1 font-medium ${
-                    darkmode ? "text-gray-200" : "text-gray-700"
-                  }`}
-                >
+                <label className="mb-1 font-medium text-gray-700 dark:text-gray-200">
                   {lang === "fa" ? "گروپ" : "Group"}
                 </label>
                 <select
-                  value={editedProduct.group || ""}
+                  value={product.group}
                   onChange={(e) => handleChange("group", e.target.value)}
                   className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                     darkmode ? "bg-gray-700 text-gray-100" : ""
                   }`}
+                  required
                 >
-                  <option value="">
-                    {lang === "fa" ? "انتخاب کنید" : "Select Group"}
-                  </option>
+                  <option value="">{lang === "fa" ? "انتخاب کنید" : "Select Group"}</option>
                   {groupOptions.map((g) => (
                     <option key={g} value={g}>
                       {g}
@@ -172,25 +177,20 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
               </div>
             </div>
 
-            {/* Unit Dropdown */}
+            {/* Unit */}
             <div className="flex flex-col">
-              <label
-                className={`mb-1 font-medium ${
-                  darkmode ? "text-gray-200" : "text-gray-700"
-                }`}
-              >
-                {lang === "fa" ? "واحد اصلی محصول" : "Product Unit"}
+              <label className="mb-1 font-medium text-gray-700 dark:text-gray-200">
+                {lang === "fa" ? "واحد" : "Unit"}
               </label>
               <select
-                value={editedProduct.unit || ""}
+                value={product.unit}
                 onChange={(e) => handleChange("unit", e.target.value)}
                 className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                   darkmode ? "bg-gray-700 text-gray-100" : ""
                 }`}
+                required
               >
-                <option value="">
-                  {lang === "fa" ? "انتخاب کنید" : "Select Unit"}
-                </option>
+                <option value="">{lang === "fa" ? "انتخاب کنید" : "Select Unit"}</option>
                 {unitOptions.map((u) => (
                   <option key={u} value={u}>
                     {u}
@@ -199,36 +199,7 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
               </select>
             </div>
 
-            {/* Prices */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {["costPrice", "sellingPrice"].map((key, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <label
-                    className={`mb-1 font-medium ${
-                      darkmode ? "text-gray-200" : "text-gray-700"
-                    }`}
-                  >
-                    {lang === "fa"
-                      ? key === "costPrice"
-                        ? "قیمت تمام شده"
-                        : "قیمت فروش"
-                      : key === "costPrice"
-                      ? "Cost Price"
-                      : "Selling Price"}
-                  </label>
-                  <input
-                    type="text"
-                    value={editedProduct[key] || ""}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                      darkmode ? "bg-gray-700 text-gray-100" : ""
-                    }`}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Materials Section */}
+            {/* Materials */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between mb-2">
                 <h3
@@ -236,7 +207,7 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
                     darkmode ? "text-gray-200" : "text-gray-700"
                   }`}
                 >
-                  {lang === "fa" ? "مواد اولیه" : "Materials"}
+                  {lang === "fa" ? "مواد اولیه" : "Raw Materials"}
                 </h3>
                 <button
                   type="button"
@@ -247,22 +218,21 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
                 </button>
               </div>
 
-              {editedProduct.materials.map((m, idx) => (
+              {product.materials.map((m, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="grid items-center grid-cols-1 gap-2 sm:grid-cols-4"
+                  className="flex flex-col items-center gap-2 sm:flex-row"
                 >
-                  {/* Material name */}
                   <select
                     value={m.name}
                     onChange={(e) =>
                       handleMaterialChange(idx, "name", e.target.value)
                     }
-                    className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                    className={`flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                       darkmode ? "bg-gray-700 text-gray-100" : ""
                     }`}
                   >
@@ -270,41 +240,40 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
                       {lang === "fa" ? "انتخاب مواد" : "Select Material"}
                     </option>
                     {materialOptions.map((mat) => (
-                      <option key={mat} value={mat}>
-                        {mat}
+                      <option key={mat.name} value={mat.name}>
+                        {mat.name} ({mat.price}$)
                       </option>
                     ))}
                   </select>
 
-                  {/* Quantity */}
                   <input
-                    type="text"
+                    type="number"
                     value={m.qty}
                     onChange={(e) =>
                       handleMaterialChange(idx, "qty", e.target.value)
                     }
                     placeholder={lang === "fa" ? "مقدار" : "Qty"}
-                    className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                    className={`flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                       darkmode ? "bg-gray-700 text-gray-100" : ""
                     }`}
                   />
 
-                  {/* Unit for material */}
+                  {/* ✅ Dropdown برای واحد */}
                   <select
                     value={m.unit}
                     onChange={(e) =>
                       handleMaterialChange(idx, "unit", e.target.value)
                     }
-                    className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                    className={`flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
                       darkmode ? "bg-gray-700 text-gray-100" : ""
                     }`}
                   >
                     <option value="">
                       {lang === "fa" ? "واحد" : "Unit"}
                     </option>
-                    {materialUnitOptions.map((unit) => (
-                      <option key={unit} value={unit}>
-                        {unit}
+                    {unitOptions.map((u) => (
+                      <option key={u} value={u}>
+                        {u}
                       </option>
                     ))}
                   </select>
@@ -320,8 +289,41 @@ export default function EditInitialProduct({ product, onClose, onSave }) {
               ))}
             </div>
 
+            {/* Cost Price */}
+            <div className="flex flex-col">
+              <label className="mb-1 font-medium text-gray-700 dark:text-gray-200">
+                {lang === "fa"
+                  ? "قیمت تمام‌شده (خودکار)"
+                  : "Auto Cost Price"}
+              </label>
+              <input
+                type="text"
+                value={product.costPrice}
+                readOnly
+                className={`p-2 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200`}
+              />
+            </div>
+
+            {/* ✅ Selling Price */}
+            <div className="flex flex-col">
+              <label className="mb-1 font-medium text-gray-700 dark:text-gray-200">
+                {lang === "fa" ? "قیمت فروش" : "Selling Price"}
+              </label>
+              <input
+                type="number"
+                value={product.sellingPrice}
+                onChange={(e) =>
+                  handleChange("sellingPrice", e.target.value)
+                }
+                placeholder={lang === "fa" ? "مثلاً 250" : "e.g. 250"}
+                className={`p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                  darkmode ? "bg-gray-700 text-gray-100" : ""
+                }`}
+              />
+            </div>
+
             {/* Buttons */}
-            <div className="flex flex-wrap justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-3 mt-4">
               <motion.button
                 type="button"
                 onClick={onClose}

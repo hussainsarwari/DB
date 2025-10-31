@@ -21,7 +21,7 @@ export default function Filters() {
     <form
       onSubmit={handleSubmit}
       className={`w-full p-4 rounded-2xl shadow-lg grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6 transition-colors ${
-        darkmode ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"
+        darkmode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
       }`}
     >
       {/* Product Drop-down */}
