@@ -3,6 +3,8 @@ import { useLanguage } from "../Provider/LanguageContext";
 import Header from "../component/header/header";
 import Sidebar from "../component/sidebar/sidebar";
 import Loading from "../component/loading/react_loader_spinner";
+import "./components/sell_reciept.css"
+import Sell_page_sidebar from './components/sell_page_sidebar';
 
 export default function Dashboard() {
   const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen ,t} = useLanguage();
@@ -51,8 +53,11 @@ export default function Dashboard() {
           )}
 
           {!loading && (
-            <div className="flex flex-col gap-6 p-5">
-              <h1>start sell page </h1>
+            <div className={`flex p-5 ${dir}`}>
+            <Sell_page_sidebar />
+            <div className="flex flex-col ">
+
+            </div>
           
             </div>
           )}
