@@ -129,7 +129,7 @@ export default function ProductionManagement() {
 
  
   return (
-    <div className={`flex flex-col gap-6 p-4 mt-6 shadow-2xl rounded-xl sm:p-6 ${  darkmode ? "bg-gray-900 text-gray-400 " : " text-gray-700 border-blue-400 bg-[#ffffff]"}`}>
+    <div className={`flex flex-col gap-6 p-4 mt-6 shadow-md rounded-xl sm:p-6 ${  darkmode ? "bg-gray-900 text-gray-400 " : " text-gray-700 border-blue-400 bg-[#ffffff]"}`}>
       {/* Header + Buttons */}
       <div className="flex flex-col justify-between gap-4 mb-4 sm:flex-row sm:items-center">
         <h2 className="text-xl font-bold text-center sm:text-left">

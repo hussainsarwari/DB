@@ -53,7 +53,7 @@ export default function ProductionChart() {
   ];
 
   return (
-    <div className={`p-4 rounded-2xl shadow-lg transition-all ${darkmode ? "bg-gray-900" : "bg-white"}`}>
+    <div className={`p-4 rounded-2xl shadow-md transition-all ${darkmode ? "bg-gray-900" : "bg-white"}`}>
       <h2 className={`text-lg p-6 font-bold mb-4 text-center ${darkmode ? "text-gray-200" : "text-gray-700"}`}>
         {t.reportTitle}
       </h2>

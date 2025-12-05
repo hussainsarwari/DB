@@ -40,7 +40,7 @@ export default React.memo(function MaterialConsumption() {
   }
 
   return (
-    <div className={`p-6 transition-all duration-700  shadow-2xl rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
+    <div className={`p-6 transition-all duration-700  shadow-md rounded-xl ${darkmode? "bg-gray-900":"bg-white"}`}>
       <h2 className={ `mb-4 text-xl font-bold  sm:text-lg ${darkmode?"text-gray-400":"text-graw-800"} text-center`}>
         {t.materialConsumption}
       </h2>

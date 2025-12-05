@@ -30,7 +30,7 @@ export default React.memo(function ProductionDetailTable() {
   }
 
   return (
-    <div className={`p-4 transition-all duration-700 shadow-2xl rounded-xl ${darkmode ? "bg-gray-900" : "bg-white"}`}>
+    <div className={`p-4 transition-all duration-700 shadow-md rounded-xl ${darkmode ? "bg-gray-900" : "bg-white"}`}>
       <h2 className={`py-2 mb-2 text-xl font-bold text-center ${darkmode ? "text-gray-200" : "text-gray-700"}`}>
         {t.reportTitle}
       </h2>
@@ -80,7 +80,7 @@ export default React.memo(function ProductionDetailTable() {
   {productionDetails.map((item, idx) => (
     <div
       key={idx}
-      className={`rounded-2xl p-5 shadow-lg transition transform hover:-translate-y-1 hover:shadow-2xl duration-300 ${
+      className={`rounded-2xl p-5 shadow-md transition transform hover:-translate-y-1 hover:shadow-xl duration-300 ${
         darkmode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
       }`}
     >

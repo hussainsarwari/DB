@@ -1,5 +1,6 @@
 import { MenuIcon, BellIcon, MessageSquare, User } from "lucide-react";
 import { useLanguage } from "../../Provider/LanguageContext";
+import { useState } from "react";
 
 export default function Header() {
    const {
@@ -7,19 +8,18 @@ export default function Header() {
     darkmode,
     setMobileMenuOpen,
     t,
-    toggleBox,
-    notification,
-    showNotifications,
   } = useLanguage();
-
+const [notificationbox,setNotificationbox]=useState(false)
+  const [notification, setNotification] = useState(2);
   return (
     <header
-      className={`sticky top-0 z-20 flex items-center justify-between w-full px-4 shadow-2xl h-14 ${
+
+      className={`sticky top-0 z-20 flex items-center justify-between w-full px-4 shadow-md h-14  ${dir} ${
         darkmode ? "bg-gray-900" : "bg-white"
       }`}
     >
       {/* Left section */}
-      <div className="flex items-center flex-1 gap-3">
+      <div className={`flex items-center flex-1 gap-3  ${dir}`}>
         <button
           onClick={() => setMobileMenuOpen(true)}
           className={`p-2 rounded-full lg:hidden ${
@@ -44,7 +44,7 @@ export default function Header() {
       <div className={`flex ${dir} items-center gap-3 relative`}>
         {/* Notification Bell */}
         <div
-          onClick={() => toggleBox("notif")}
+          onClick={() => setNotificationbox(!notificationbox)}
           className={`relative p-2 rounded-full cursor-pointer ${
             darkmode
               ? "hover:bg-gray-800 bg-gray-900 text-gray-400"
@@ -66,9 +66,9 @@ export default function Header() {
         </div>
 
         {/* Notification Popup */}
-        {showNotifications && (
+        {notificationbox && (
           <div
-            className={`absolute overflow-auto flex flex-col gap-1 right-0 w-64 p-3 transition-opacity duration-300 ${
+            className={`absolute overflow-auto flex flex-col gap-1 ${dir=='flex-row'?"right-0":"left-0"} w-64 p-3 transition-opacity duration-300 ${
               darkmode ? "bg-gray-900 text-gray-400" : "bg-white"
             } h-[300px] shadow-xl top-14 rounded-xl`}
           >
@@ -107,7 +107,7 @@ export default function Header() {
             darkmode ? "text-gray-400" : "text-gray-800"
           }`}
         >
-          {t.user}
+   
         </span>
       </div>
     </header>

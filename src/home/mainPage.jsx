@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import Sidebar from "../component/sidebar/sidebar";
-import HomePage from "./components/home_page";
+import HomePage from "./home_page";
 import { useLanguage } from "../Provider/LanguageContext";
 import Header from "../component/header/header";
 import Loading from '../component/loading/react_loader_spinner'

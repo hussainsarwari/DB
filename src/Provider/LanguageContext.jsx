@@ -6,12 +6,9 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
-  const [showLanguageBox, setShowLanguageBox] = useState(false);
-  const [showSettingBox, setShowSettingBox] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notification, setNotification] = useState(2);
-  const [menuCollapsed, setMenuCollapsed] = useState(false);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuCollapsed, setMenuCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   // 🌓 Darkmode
@@ -55,28 +52,17 @@ export const LanguageProvider = ({ children }) => {
   // 🧭 Toggle helpers
   const toggledarkmode = () => setdarkmode((prev) => !prev);
 
-  const toggleBox = (box) => {
-    if (box === "lang") setShowLanguageBox((p) => !p);
-    if (box === "setting") setShowSettingBox((p) => !p);
-    if (box === "notif") setShowNotifications((p) => !p);
-  };
-
   return (
     <LanguageContext.Provider
       value={{
         active, setActive,
         lang, setLang,
         t, dir,
-        showLanguageBox, setShowLanguageBox,
-        showSettingBox, setShowSettingBox,
-        notification, setNotification,
+        mobileMenuOpen, setMobileMenuOpen,
+        menuCollapsed,setMenuCollapsed,
         loading, setLoading,
         darkmode, setdarkmode, toggledarkmode,
-        toggleBox,
-        menuCollapsed, setMenuCollapsed,
-        mobileMenuOpen, setMobileMenuOpen,
         isMobile, setIsMobile,
-        showNotifications, setShowNotifications,
       }}
     >
       {children}

@@ -3,7 +3,7 @@ import React from "react";
 export default function KPIcard({ title, value, darkmode }) {
   return (
     <div
-      className={`p-4 rounded-2xl shadow-lg transition transform hover:-translate-y-1 hover:shadow-2xl duration-300   ${
+      className={`p-4 rounded-2xl shadow-md transition transform hover:-translate-y-1 hover:shadow-lg duration-300   ${
         darkmode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
       }`}
     >

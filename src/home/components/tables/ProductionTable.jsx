@@ -35,7 +35,7 @@ export default React.memo(function ProductionTable() {
 
   return (
     <div
-      className={`p-4 overflow-auto transition-all duration-700 shadow-2xl rounded-xl h-[460px] ${
+      className={`p-4 max-w-[330px] md:max-w-full overflow-auto transition-all duration-700 shadow-md rounded-xl h-[460px] ${
         darkmode ? "bg-gray-900" : "bg-white"
       }`}
     >
@@ -58,7 +58,7 @@ export default React.memo(function ProductionTable() {
       </p>
 
       {/* 🔹 جدول گزارش */}
-      <table className="min-w-full divide-y divide-gray-200 table-auto">
+      <table className="w-full divide-y divide-gray-200 table-auto">
         <thead className={`${darkmode ? "bg-gray-800" : "bg-gray-100"}`}>
           <tr>
             <th className="px-4 py-2 text-center text-gray-400">{t.product}</th>

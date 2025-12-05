@@ -20,7 +20,7 @@ export default function Filters() {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`w-full p-4 rounded-2xl shadow-lg grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6 transition-colors ${
+      className={`w-full p-4 rounded-2xl shadow-md grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6 transition-colors ${
         darkmode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"
       }`}
     >
@@ -76,7 +76,7 @@ export default function Filters() {
       <div className="flex items-end w-full sm:w-auto">
         <button
           type="submit"
-          className={`w-full sm:w-auto px-4 py-2 rounded-md shadow font-medium transition-colors ${
+          className={`w-full sm:w-auto px-4 py-2 rounded-md  font-medium transition-colors ${
             darkmode ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-blue-500 hover:bg-blue-600 text-white"
           }`}
         >

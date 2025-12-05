@@ -120,7 +120,7 @@ export default function HomePageCard() {
         {summaryCards.map((card, idx) => (
           <div
             key={idx}
-            className={`flex flex-col items-center justify-center p-6 text-center transform  shadow-2xl rounded-xl hover:shadow-3xl hover:-translate-y-1 ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
+            className={`flex flex-col items-center justify-center p-6 text-center transform  shadow-md rounded-xl hover:shadow-lg hover:-translate-y-1 ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
           >
             <div className={`mb-3 `}>{card.icon}</div>
             <h3 className="font-medium ">{card.title}</h3>
@@ -134,7 +134,7 @@ export default function HomePageCard() {
       
   <button
             onClick={handleDownloadReport}
-            className={`flex justify-center p-4 cursor-pointer hover:scale-105   shadow-2xl rounded-xl text-center ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
+            className={`flex justify-center p-4 cursor-pointer hover:scale-105   shadow-md rounded-xl text-center ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
           >
              {t.printReport}
           </button>
@@ -149,7 +149,7 @@ export default function HomePageCard() {
       {detailsGroups.map((group, idx) => (
         <div
           key={idx}
-          className={`flex flex-col gap-12 p-6 shadow-2xl rounded-xl ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
+          className={`flex flex-col gap-12 p-6 shadow-md rounded-xl ${ darkmode ? "bg-gray-900 text-gray-500" : "bg-gray-50 text-gray-700"}`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export default function HomePageCard() {
             {group.items.map((item, idx2) => (
               <div
                 key={idx2}
-                className={ `flex items-center justify-between p-4 rounded-lg shadow-xl ${ darkmode ? "bg-gray-800 text-gray-500" : "bg-gray-200 text-gray-700"}`}
+                className={ `flex items-center justify-between p-4 rounded-lg shadow-md ${ darkmode ? "bg-gray-800 text-gray-500" : "bg-gray-200 text-gray-700"}`}
               >
                 <div className="flex items-center gap-2">
                   {item.icon}

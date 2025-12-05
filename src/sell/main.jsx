@@ -4,9 +4,8 @@ import Header from "../component/header/header";
 import Sidebar from "../component/sidebar/sidebar";
 import Loading from "../component/loading/react_loader_spinner";
 
-
 export default function Dashboard() {
-  const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen } = useLanguage();
+  const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen ,t} = useLanguage();
 
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +50,12 @@ export default function Dashboard() {
             </div>
           )}
 
-      
+          {!loading && (
+            <div className="flex flex-col gap-6 p-5">
+        
+          
+            </div>
+          )}
         </main>
       </div>
     </div>

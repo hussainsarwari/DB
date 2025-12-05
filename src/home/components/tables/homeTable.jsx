@@ -44,7 +44,7 @@ export default function DashboardTables() {
   }
 
   const DashboardTable = ({ title, headers, rows }) => (
-    <section className={`w-full transition-transform transform shadow-2xl rounded-xl hover:shadow-3xl hover:-translate-y-1 ${darkmode?"bg-gray-900":"hover:bg-blue-50"}`}>
+    <section className={`w-full transition-transform transform shadow-md rounded-xl hover:shadow-lg hover:-translate-y-1 ${darkmode?"bg-gray-900":"hover:bg-blue-50"}`}>
       <header className="flex flex-col px-4 py-3 border-b border-gray-200 sm:flex-row sm:justify-between sm:items-center">
         <h2 className="text-base font-semibold text-gray-400 sm:text-lg">{title}</h2>
         <p className="mt-1 text-xs text-gray-500 sm:mt-0 sm:text-sm">

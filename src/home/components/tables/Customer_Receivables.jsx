@@ -26,8 +26,8 @@ export default React.memo(function CustomerReceivables() {
   }
 
   return (
-    <section className={`w-full max-w-6xl p-0 mx-auto overflow-y-auto sm:p-6 lg:p-0 h-[300px] shadow-2xl ${darkmode?"":""}`}>
-      <div className={`overflow-hidden transition-all duration-700  p-2 shadow-2xl rounded-xl ${darkmode?"bg-gray-900":"bg-white"}`}>
+    <section className={`w-full max-w-6xl p-0 mx-auto overflow-y-auto sm:p-6 lg:p-0 h-[300px] shadow-md ${darkmode?"":""}`}>
+      <div className={`overflow-hidden transition-all duration-700  p-2 shadow-md rounded-xl ${darkmode?"bg-gray-900":"bg-white"}`}>
         {/* Header */}
         <header className={`flex flex-col px-4 py-5 border-b border-gray-100 sm:flex-row sm:items-center sm:justify-between sm:px-6 ${darkmode?"":""}`}>
           <h2 className={`mb-4 text-xl font-bold  ${darkmode?"text-gray-400":"text-gray-500"}`}>

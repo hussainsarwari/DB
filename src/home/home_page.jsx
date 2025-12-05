@@ -1,20 +1,20 @@
 import React, { lazy, Suspense } from "react";
-import Homepagefillter from "../../component/Homepagefillter";
-import HomePageCard from "./homePageCard";
-import ProductionProgress from "../../component/ProductionProgress";
-import { useLanguage } from "../../Provider/LanguageContext";
+import Homepagefillter from "../component/Homepagefillter";
+import HomePageCard from "./components/homePageCard";
+import ProductionProgress from "../component/ProductionProgress";
+import { useLanguage } from "../Provider/LanguageContext";
 
 // Lazy load کامپوننت‌های سنگین
-const CapacityChart = lazy(() => import("./charts/capacity"));
-const InventoryTrend = lazy(() => import("./charts/inventry_trend"));
+const CapacityChart = lazy(() => import("./components/charts/capacity"));
+const InventoryTrend = lazy(() => import("./components/charts/inventry_trend"));
 const MaterialConsumptionChart = lazy(() =>
-  import("./charts/Material_Consumptionchart")
+  import("./components/charts/Material_Consumptionchart")
 );
-const Expenses = lazy(() => import("./charts/expenses"));
-const MultiProduction = lazy(() => import("./charts/multi_production"));
-const DashboardTables = lazy(() => import("./tables/homeTable"));
-const CustomerReceivables = lazy(() => import("./tables/Customer_Receivables"));
-const ProductionTable = lazy(() => import("./tables/ProductionTable"));
+const Expenses = lazy(() => import("./components/charts/expenses"));
+const MultiProduction = lazy(() => import("./components/charts/multi_production"));
+const DashboardTables = lazy(() => import("./components/tables/homeTable"));
+const CustomerReceivables = lazy(() => import("./components/tables/Customer_Receivables"));
+const ProductionTable = lazy(() => import("./components/tables/ProductionTable"));
 
 export default React.memo(function HomePage() {
   const { darkmode, lang } = useLanguage();

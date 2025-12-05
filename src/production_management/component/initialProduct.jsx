@@ -74,7 +74,7 @@ export default function InitialProduct() {
   );
 
   return (
-    <div className={`rounded-2xl shadow-2xl p-5 border ${darkmode ? "bg-gray-900 border-gray-900 text-gray-100" : "bg-white border-gray-100 text-gray-900"} ${dir} transition-all duration-500`}>
+    <div className={`rounded-2xl shadow-md p-5 border ${darkmode ? "bg-gray-900 border-gray-900 text-gray-100" : "bg-white border-gray-100 text-gray-900"} ${dir} transition-all duration-500`}>
 
       {/* Header */}
       <div className="flex flex-col items-center justify-center gap-4 mb-4 md:flex-row md:justify-around" style={{margin:"20px"}}>

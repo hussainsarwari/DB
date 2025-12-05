@@ -41,7 +41,7 @@ export default React.memo(function Expenses() {
   }
 
   return (
-    <div className={`p-6 transition-all duration-700 shadow-2xl bg- rounded-xl hover:shadow-lg ${darkmode?"bg-gray-900":"bg-white"}`}>
+    <div className={`p-6 transition-all duration-700 shadow-md bg- rounded-xl hover:shadow-lg ${darkmode?"bg-gray-900":"bg-white"}`}>
       <h2 className={`mb-4 text-xl font-bold text-center sm:text-lg ${darkmode?"text-gray-400":"text-gray-800"}`}>
         {t.expensives}
       </h2>

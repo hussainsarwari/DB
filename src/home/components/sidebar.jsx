@@ -52,12 +52,12 @@ const menuItems = [
         
         isMobile
           ? mobileMenuOpen
-            ? "translate-x-0"
-            : "hidden"
+            ? "left-20"
+            : ""
           : menuCollapsed
           ? "w-16"
           : "w-64"
-      } ${darkmode? " bg-gray-900 ":" bg-[#ffffff] "}lg:translate-x-0 flex flex-col shadow-2xl`}
+      } ${darkmode? " bg-gray-900 ":" bg-[#ffffff] "} lg:translate-x-0 flex flex-col shadow-md`}
     >
       {/* header */}
       <div className={`flex items-center justify-between p-3 font-bold text-center  ${darkmode? " text-gray-400":""}`}>
@@ -65,7 +65,7 @@ const menuItems = [
         <span
           onClick={() =>
             isMobile
-              ? setMobileMenuOpen(false)
+              ? setMobileMenuOpen(true)
               : setMenuCollapsed(!menuCollapsed)
           }
           className={`p-2 rounded-full cursor-pointer  ${darkmode? "hover:bg-blue-500":"hover:bg-blue-300"}`}
@@ -155,7 +155,7 @@ const menuItems = [
         <div
           className={`absolute bottom-60 ${
             lang === "eng" ? "left-16" : "right-16"
-          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-xl p-3 w-40 transition-opacity duration-300`}
+          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-md p-3 w-40 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li
@@ -179,7 +179,7 @@ const menuItems = [
         <div
           className={`absolute bottom-16 ${
             lang === "eng" ? "left-16" : "right-16"
-          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-lg p-3 w-52 transition-opacity duration-300`}
+          } ${darkmode?"text-gray-400 bg-gray-800":"bg-gray-100 text-gray-800"}  rounded-xl shadow-md p-3 w-52 transition-opacity duration-300`}
         >
           <ul className="flex flex-col gap-2 text-sm">
             <li className="hover:bg-[#164070] px-2 py-1 rounded cursor-pointer">

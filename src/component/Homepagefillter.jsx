@@ -6,7 +6,7 @@ export default function HomePageControls({ onFilter, onReset }) {
      const { darkmode } = useLanguage();
 
   return (
-    <div className={`w-full p-4 mt-6  shadow-2xl rounded-2xl ${  darkmode ? "bg-gray-900 text-gray-400" : "bg-gray-50 text-gray-700"}`}>
+    <div className={`w-full p-4 mt-6  shadow-md rounded-2xl ${  darkmode ? "bg-gray-900 text-gray-400" : "bg-gray-50 text-gray-700"}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* === تاریخ‌ها === */}
         <div className="grid w-full grid-cols-1 gap-3 sm:flex sm:items-center sm:gap-4">

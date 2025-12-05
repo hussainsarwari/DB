@@ -82,9 +82,9 @@ export default function AddNewProduct({ onClose, onSave }) {
 
   return (
     <AnimatePresence>
-      <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+      <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4 shadow-md bg-black/30 backdrop-blur-sm"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-        <motion.div className={`w-full max-w-lg p-6 mx-auto rounded-2xl shadow-xl overflow-auto max-h-[90vh] ${darkmode ? "bg-gray-900" : "bg-white"}`}
+        <motion.div className={`w-full max-w-lg p-6 mx-auto rounded-2xl  overflow-auto max-h-[90vh] ${darkmode ? "bg-gray-900" : "bg-white"}`}
           initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} transition={{ duration: 0.25 }}>
 
           {/* Header */}
