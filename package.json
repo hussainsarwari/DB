@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "apexcharts": "^5.3.5",
+    "dayjs": "^1.11.19",
     "file-saver": "^2.0.5",
     "firebase": "^12.2.1",
     "framer-motion": "^12.23.24",
@@ -25,6 +26,7 @@
     "react-loader-spinner": "^8.0.0",
     "react-loading-indicators": "^1.0.1",
     "react-qr-code": "^2.0.18",
+    "react-qrcode-logo": "^4.0.0",
     "react-router-dom": "^7.8.2",
     "sweetalert2": "^11.26.3",
     "tailwind-scrollbar": "^4.0.2",

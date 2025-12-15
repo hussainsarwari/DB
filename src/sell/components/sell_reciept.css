@@ -25,7 +25,13 @@
     border: none !important;
     box-shadow: none !important;
   }
+  /* header */
 
+  .print-header{
+    display: flex !important;
+    flex-direction: column;
+
+  }
   .print-area h1, .print-area h2, .print-area h3 {
     margin: 5px 0 !important;
     text-align: center !important;

@@ -1,208 +1,548 @@
 import React, { useState } from "react";
-import { Calendar, Receipt, Store, Printer, ShoppingCart } from "lucide-react";
+import { DollarSign, Calendar, ClipboardList, Gift, Truck } from "lucide-react";
+import {
+  Receipt,
+  Store,
+  Printer,
+  ShoppingCart,
+  Notebook,
+} from "lucide-react";
 import QRCode from "react-qr-code";
+import dayjs from "dayjs";
+import { BsWhatsapp } from "react-icons/bs";
+import { useLanguage } from "../../Provider/LanguageContext";
 
-export default function SidebarSales({
-  store = {
+export default  function SidebarSales({
+  totalPurchase,
+  selectedcustomer,
+  itemsList
+}) {
+  const [paymentAFN, setPaymentAN] = useState(0);
+  const [paymentUSD, setPaymentUSD] = useState(0);
+ const [currencyRate, setCurrencyRate] = useState(85); // Example: 1 USD = 85 AFN
+ const store = {
     name: "My Store",
-    logo: "data:image/png;base64,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", // لوگو از اینترنت
+    whatsapp: "+93797542547",
     phone: "+1234567890",
     address: "123 Main Street, City, Country",
     tagline: "Your Trusted Store",
   },
-  customer = { name: "John Doe", fatherName: "Richard Doe" },
-  initialTotal = 0,
-  initialRemaining = 0,
-  registers = [
-    { id: "main", label: "Main Register" },
+  customer = {
+    name: selectedcustomer ,
+    lastname: "Richard Doe",
+    PhoneNumber: "+93 766805049",
+  };
+function totalRemainingfunction() {
+  const expenses = Number(Expenses);
+  const total = Number(totalPurchase);
+  const disc = Number(discount);
+  const remain = Number(remaining);
+  const paidAFN = Number(paymentAFN);
+  const paidUSD = Number(paymentUSD);
+
+  return expenses + total - disc + remain - paidAFN - paidUSD* currencyRate;
+}
+
+ const registers = [
+    { id: "main", label: "Select your Register" },
     { id: "drawer-1", label: "Register 1" },
     { id: "drawer-2", label: "Register 2" },
   ],
-  onSell = (payload) => {},
-}) {
+  onSell = (payload) => {};
+  const { darkmode, t, dir } = useLanguage();
   const [selectedRegister, setSelectedRegister] = useState(
     registers[0]?.id || ""
   );
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [billNumber, setBillNumber] = useState("");
+  const [Note, setNote] = useState("");
   const [working, setWorking] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [Expenses, setExpenses] = useState(0);
+  const [message, setMessage] = useState(
+    "Thank you for your excellent service! سلام عشقم این پیام  یک متن تستیه که ببینی درست کار میکنه یا نه"
+  );
+  // Logistics
+  const [selectedDriver, setSelectedDriver] = useState("");
+  const [showCustomDriver, setShowCustomDriver] = useState(false);
+  const [customDriverName, setCustomDriverName] = useState("");
+  const drivers = [
+    { id: 1, name: "Ahmad" },
+    { id: 2, name: "Karim" },
+    { id: 3, name: "Sami" },
+    { id: 4, name: "Latif" },
+  ];
+  const remaining = 100;
 
-  const totalPurchase = initialTotal;
-  const remaining = initialRemaining;
+  const whatsappMessage = ({ customer, billNumber }) => `
+*Customer Name:* ${customer.name}
+*lastName:* ${customer.lastname}
+*Bill Number:* ${billNumber}
 
-  const qrData = JSON.stringify({
-    store: store.name,
-    billNumber,
-    date,
-    customerName: customer.name,
-    fatherName: customer.fatherName,
+${message}
+`;
+
+  const storeWhatsapp = store?.whatsapp || "";
+  const cleanNumber = storeWhatsapp.replace(/[^0-9]/g, "");
+  const qrData = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodeURIComponent(
+    whatsappMessage({ customer, billNumber })
+  )}`;
+
+  const buildPayload = () => ({
     totalPurchase,
     remaining,
+    totalRemainingfunction,
+    register: selectedRegister,
+    date,
+    billNumber,
   });
 
-  function buildPayload() {
-    return {
-      totalPurchase,
-      remaining,
-      register: selectedRegister,
-      date,
-      billNumber,
-    };
-  }
-
-  async function handleSell() {
+  const handleSell = async () => {
     setWorking(true);
     try {
       await onSell(buildPayload());
     } finally {
       setWorking(false);
     }
-  }
+  };
 
-  async function handlePrint() {
+  const handlePrint = async () => {
     setWorking(true);
     try {
       setTimeout(() => window.print(), 500);
     } finally {
       setWorking(false);
     }
-  }
+  };
 
+const sendBillToWhatsapp = async () => {
+  try {
+    const customerNumber = customer.PhoneNumber.replace(/[^0-9]/g, "");
+
+    // ساخت لیست محصولات
+    const productList = itemsList
+      .map(
+        (item, index) =>
+          `${index + 1}. ${item.name} - ${item.quantity} ${item.unit} x ${item.unitPrice.toLocaleString()} USD = ${(item.quantity * item.unitPrice).toLocaleString()} USD`
+      )
+      .join("\n");
+
+    // جمع کل و مقادیر پرداختی
+    const total = totalPurchase || 0;
+    const discountAmount = discount || 0;
+    const shippingCost = Expenses || 0;
+    const finalTotal = totalRemainingfunction(); // مجموع باقی‌داری جدید
+
+    // مبلغ پرداخت شده به دلار ضرب در نرخ دلار
+    const paymentUSDInLocal = paymentUSD ;
+
+    // پیام WhatsApp حرفه‌ای
+    const msg = `
+سلام ${customer.name} وقت شما بخیر,
+
+✅ خرید شما با موفقیت ثبت شد!
+
+📅 تاریخ: ${dayjs().format("DD MMM YYYY")}
+🧾 شماره فاکتور: ${billNumber}
+
+===================================================
+🛒 لیست خرید:
+${productList}
+===================================================
+مجموع خرید: ${total.toLocaleString()} 
+ تخفیف: ${discountAmount.toLocaleString()} 
+ کرایه ارسال: ${shippingCost.toLocaleString()} 
+ باقی‌داری گذشته: ${remaining.toLocaleString()} 
+===================================================
+مبلغ پرداخت شده:
+   به افغانی: ${paymentAFN.toLocaleString()} AFG
+   به دلار (ضرب در نرخ ${currencyRate}): ${paymentUSDInLocal.toLocaleString()} 
+===================================================
+💳 مجموع باقی‌داری جدید شما: ${finalTotal.toLocaleString()} 
+===================================================
+
+
+🏢 مشخصات شرکت  تکنالوژی راحت:
+
+📍 آدرس دفتر مرکزی: کابل، افغانستان
+📞 تلفن پشتیبانی: 0700XXXXXX
+📱 واتساپ پشتیبانی: 0700XXXXXX
+🌐 وب‌سایت رسمی: www.raacht.com
+
+🔗 شبکه‌های اجتماعی:
+   - اینستاگرام: https://instagram.com/raacht
+   - تلگرام: https://t.me/raacht
+   - فیسبوک: https://facebook.com/raacht
+   - لینکدین: https://linkedin.com/company/raacht
+
+------------------------------------------------------------
+تولید شده توسط نرم‌افزار راحت
+با نرم‌افزار راحت، سرعت، دقت و کیفیت را تجربه کنید!
+ نرم‌افزار راحت، تجربه‌ای حرفه‌ای و مطمئن برای مدیریت فروش و فاکتورها ارائه می‌دهد.
+
+
+
+
+`;
+
+    // باز کردن WhatsApp
+    window.open(
+      `https://api.whatsapp.com/send?phone=${customerNumber}&text=${encodeURIComponent(
+        msg
+      )}`,
+      "_blank"
+    );
+  } finally {
+    setWorking(false);
+  }
+};
+
+
+  const bgClass = darkmode
+    ? "bg-gray-900 text-gray-200"
+    : "bg-white text-gray-800";
+  const inputClass = darkmode
+    ? "w-full px-3 py-1 my-2 text-sm border border-gray-700 rounded-lg bg-gray-800 text-gray-200 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+    : "w-full px-3 py-1 text-sm border border-gray-200 rounded-lg bg-white text-gray-800 focus:ring-1 focus:ring-blue-200 focus:outline-none";
+
+  const btnPrimary = darkmode
+    ? "flex items-center px-7 cursor-pointer  justify-center gap-2 py-1 font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-60"
+    : "flex items-center px-7 cursor-pointer justify-center gap-2 py-1 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60";
+
+  const btnSecondary = darkmode
+    ? "flex items-center justify-center gap-2 w-full md:w-fit py-1 px-5 cursor-pointer font-medium text-blue-400 bg-gray-800 border border-blue-400 rounded-lg hover:bg-gray-700 disabled:opacity-60"
+    : "flex items-center justify-center gap-1 w-full md:w-fit text-sm py-2 cursor-pointer px-2 font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-gray-50 disabled:opacity-60";
+
+  let items = [
+    { name: "Product A", qty: 2, price: 50 },
+    { name: "Product B", qty: 1, price: 100 },
+    { name: "Product C", qty: 3, price: 30 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+  ];
   return (
-    <div className="w-full max-w-[300px] mx-auto p-6 bg-white flex flex-col gap-3 shadow-lg rounded-xl print-area">
-      {/* Header - فقط چاپ */}
-      <div className="items-center justify-between hidden w-full gap-2 pb-4 border-b border-gray-300 print:flex">
-        <div className="flex flex-col items-start ">
-          <h1 className="text-2xl font-bold">{store.name}</h1>
-          <div className="text-sm text-gray-700">Phone: {store.phone}</div>
-          <div className="text-sm text-center text-gray-700">
-            {store.address}
+    <div
+      className={`md:w-[400px] w-full relative  mx-auto p-6 flex flex-col gap-5 shadow-lg rounded-xl    print-area ${bgClass}`}
+    >
+      <div
+        className={`hidden    w-full gap-2 p-1 print-header border-b border-gray-300 ${" text-gray-900"}`}
+      >
+        {/* 1. Logo + Company Info */}
+        <div className="flex items-center justify-between gap-1 pb-1 ">
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold ">
+              {store.name || "Company Name"}
+            </span>
+            <span className="text-xs text-gray-500">
+              {store.phone || "000-000-0000"}
+            </span>
+            <span className="text-xs text-gray-500">
+              {store.address || "Company Address"}
+            </span>
+            <span className="text-xs italic text-gray-400">
+              {store.tagline || "Your Trusted Store"}
+            </span>
           </div>
-          <div className="text-xs italic text-gray-500">{store.tagline}</div>
-            <div className="flex justify-between">
-            <span>Date:</span>
-            <span>{date}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Bill #:</span>
-            <span>{billNumber || "---"}</span>
-          </div>
+          <img
+            src="data:image/png;base64,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"
+            alt={`${store.name} Logo`}
+            className="object-contain w-20 h-20"
+          />
         </div>
-        <img
-          src={store.logo}
-          alt="Store Logo"
-          className="object-contain w-20 h-20"
-        />
+
+        {/* 5. Date */}
+        <div className="flex justify-between mt-2 text-sm">
+          <span className="font-medium">Date:</span>
+          <span>{dayjs(date).format("DD MMM YYYY")}</span>
+        </div>
+
+        {/* 6. Customer */}
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Name:</span>
+          <span>{customer.name || "---"}</span>
+        </div>
+
+        {/* last Name */}
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Last Name:</span>
+          <span>{customer.lastname || "---"}</span>
+        </div>
+
+        {/* Bill Number */}
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Bill Number:</span>
+          <span>{billNumber || "---"}</span>
+        </div>
+        {/* driver name */}
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Driver name:</span>
+          <span>{selectedDriver || customDriverName || "---"}</span>
+        </div>
+
+        {/* Note */}
+        {Note && (
+          <div className="flex justify-between mt-1 text-sm">
+            <span className="font-medium">Note:</span>
+            <span>{Note}</span>
+          </div>
+        )}
       </div>
 
-      {/* Purchase / Remaining */}
-      <div className="flex flex-col gap-2 py-2 mb-3 text-gray-800 border-b border-gray-300">
+      <div className={`flex flex-col gap-2 py-2 mb-3  no-print `}>
         <div className="flex justify-between text-sm">
-          <span>Purchase:</span>
-          <span>${totalPurchase.toLocaleString()}</span>
+          <span>Total:</span>
+          <span>${totalPurchase }</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span>Discount:</span>
+          <span>${discount}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span>Expenses:</span>
+          <span>${Expenses}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span>Remaining:</span>
           <span>${remaining.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between text-base font-semibold">
+        <div className="flex justify-between text-base font-semibold border-t border-gray-500">
           <span>Total Remaining:</span>
-          <span>${remaining.toLocaleString()}</span>
+          <span>${totalRemainingfunction()}</span>
         </div>
       </div>
 
-      {/* Inputs - فقط مدیریت */}
-      <div className="flex flex-col gap-3 mb-6 no-print">
-        {[
-          {
-            label: "Select Register",
-            icon: <Store size={16} />,
-            element: (
-              <select
-                value={selectedRegister}
-                onChange={(e) => setSelectedRegister(e.target.value)}
-                className="w-full px-3 py-1 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-200 focus:outline-none"
-              >
-                {registers.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-            ),
-          },
-          {
-            label: "Date",
-            icon: <Calendar size={16} />,
-            element: (
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-1 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-200 focus:outline-none"
-              />
-            ),
-          },
-          {
-            label: "Bill Number",
-            icon: <Receipt size={16} />,
-            element: (
-              <input
-                type="text"
-                value={billNumber}
-                onChange={(e) => setBillNumber(e.target.value)}
-                placeholder="e.g., 12345"
-                className="w-full px-3 py-1 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-200 focus:outline-none"
-              />
-            ),
-          },
-        ].map((field, index) => (
-          <div key={index} className="flex flex-col gap-1">
-            <label className="flex items-center gap-1 text-sm text-gray-500">
-              {field.icon} {field.label}
-            </label>
-            {field.element}
+      {/* Inputs */}
+      <div className="flex flex-col w-full gap-2">
+        <div className="grid grid-cols-2 gap-2 mb-2 no-print">
+          <div className="gap-2">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className={`${inputClass} no-print`}
+            />
           </div>
-        ))}
-      </div>
 
-      {/* Buttons - مدیریت */}
-      <div className="flex flex-col gap-2 my-4 no-print">
-        <button
-          onClick={handleSell}
-          disabled={working}
-          className="flex items-center justify-center gap-2 py-2 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
-        >
-          <ShoppingCart size={16} /> {working ? "..." : "Sell"}
-        </button>
-        <button
-          onClick={handlePrint}
-          disabled={working}
-          className="flex items-center justify-center gap-2 py-2 font-medium text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-gray-50 disabled:opacity-60"
-        >
-          <Printer size={16} /> {working ? "..." : "Print"}
-        </button>
-      </div>
-
-      {/* Footer - فقط چاپ */}
-
-      <div className="hidden w-full print:flex-col print-footer">
-        <div className="flex items-center justify-between gap-5">
-
-        <QRCode value={qrData} size={120} />
-        <div className="flex flex-col justify-end mt-5">
+          <div className="gap-2">
+            <input
+              type="text"
+              value={billNumber}
+              onChange={(e) => setBillNumber(e.target.value)}
+              placeholder="bill #"
+              className={`${inputClass} no-print`}
+            />
+          </div>
+          {/* payment amount */}
+          <div className="gap-2">
+            <input
+              type="number"
+              min={0}
+              onChange={(e) => setPaymentAN(e.target.value)}
+              placeholder="Payment(AFN)"
+              className={`${inputClass} no-print`}
+            />
+          </div>
+          <div className="gap-2">
+            <input
+              type="number"
+             min={0}
+             onChange={(e) => setPaymentUSD(e.target.value)}
+              placeholder="Payment(usd)"
+              className={`${inputClass} no-print`}
+            />
+          </div>
         
-          <div className="flex justify-between">
-            <span>Customer:</span>
-            <span>{customer.name || "---"}</span>
+          {/* register select */}
+          <div className="col-start-1 col-end-3 gap-2">
+            <label
+              htmlFor="select_register"
+              className="text-[12px] text-gray-500"
+            >
+              Select Register
+            </label>
+            <select
+              id="select_register"
+              name="select_register"
+              value={selectedRegister}
+              onChange={(e) => setSelectedRegister(e.target.value)}
+              className={`${inputClass} no-print`}
+            >
+              {registers.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="flex justify-between">
-            <span>Father Name:</span>
-            <span>{customer.fatherName || "---"}</span>
+
+          {/* discount */}
+          <div
+            className={`${inputClass} no-print  outline-none  active:border-0`}
+          >
+            <select name="discount" id="discount">
+              <option value="number">amount</option>
+              <option value="%">%</option>
+            </select>
           </div>
-          <div className="mt-2 text-sm font-medium text-center">Scan to view full bill</div>
-          <div className="mt-1 text-xs italic text-gray-500">  All details are encoded in QR  </div>
+          <div className="gap-2">
+            <input
+              type="number"
+              onChange={(e) => {
+                setDiscount(e.target.value);
+              }}
+              placeholder="discount"
+              className={`${inputClass} no-print`}
+            />
+          </div>
+
+          {/* Driver & Delivery Fee */}
+          <div
+            className={`${inputClass} no-print border outline-none flex items-center justify-center active:border-0`}
+          >
+            <select
+              value={selectedDriver}
+              onChange={(e) => {
+                if (e.target.value === "other") {
+                  setShowCustomDriver(true);
+                } else {
+                  setSelectedDriver(e.target.value);
+                  setShowCustomDriver(false);
+                }
+              }}
+              className="w-full"
+            >
+              {drivers.map((d) => (
+                <option key={d.id} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+              <option value="other">Other...</option>
+            </select>
+          </div>
+
+          {showCustomDriver && (
+            <input
+              type="text"
+              value={customDriverName}
+              onChange={(e) => setCustomDriverName(e.target.value)}
+              placeholder=" Driver Name"
+              className={inputClass}
+            />
+          )}
+          {!showCustomDriver && (
+            <input
+              type="number"
+              value={Expenses}
+              
+              onChange={(e) => setExpenses(e.target.value)}
+              placeholder="Delivery Fee"
+              className={inputClass}
+            />
+          )}
         </div>
+        <div className="gap-2 my-5">
+          <textarea
+            rows={1}
+            value={Note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Note"
+            className={`${inputClass} no-print`}
+          ></textarea>
+        </div>
+        {/* Buttons */}
+        <div className="flex flex-col gap-2 my-2 no-print">
+          <button
+            onClick={handleSell}
+            disabled={working}
+            className={btnPrimary}
+          >
+            <ShoppingCart size={16} /> {working ? "..." : "Sell"}
+          </button>
+          <div className="flex items-center justify-between gap-2">
+            <button
+              onClick={handlePrint}
+              disabled={working}
+              className={btnSecondary}
+            >
+              <Printer size={16} /> {working ? "..." : "sell & Print"}
+            </button>
+            <button
+              onClick={sendBillToWhatsapp}
+              disabled={working}
+              className={btnSecondary}
+            >
+              <BsWhatsapp size={16} /> {working ? "..." : "Send WhatsApp"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Items List - Multi-page Print */}
+      <div className="flex-col hidden w-full gap-1 print:flex print:flex-col print:gap-1 print:border-none">
+        <div className="flex flex-col w-full gap-1 print:flex print:flex-col print:gap-1 ">
+          {/* Table Header */}
+          <div className="flex text-sm j print:font-bold print:text-gray-800 print:border-b print:text-center print:items-center print:bg-gray-100">
+            <span className="w-1/2 print:w-1/2">Item</span>
+            <span className="w-1/6 text-center print:text-center">Qty</span>
+            <span className="w-1/6 text-right print:text-right">Price</span>
+            <span className="w-1/6 text-right print:text-right">Total</span>
+          </div>
+
+          {/* Table Rows */}
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex justify-between py-2 text-sm border-b border-gray-100 print:flex print:justify-between print:py-2 print:text-gray-700 print:border-b print:border-gray-200 [break-inside:avoid]"
+            >
+              <span className="w-1/2 print:w-1/2">{item.name}</span>
+              <span className="w-1/6 text-center print:text-center">
+                {item.qty}
+              </span>
+              <span className="w-1/6 text-right print:text-right">
+                ${item.price.toLocaleString()}
+              </span>
+              <span className="w-1/6 text-right print:text-right">
+                ${(item.qty * item.price).toLocaleString()}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer QR */}
+      <div className="fixed bottom-0 left-0 hidden w-full px-5 pt-5 border-t border-gray-300 print:flex-col print-footer">
+        <div
+          className={`flex items-center justify-between w-full gap-5 ${dir}`}
+        >
+          <div className="flex flex-col justify-end mt-5">
+            <div className="flex justify-between text-sm">
+              <span>Total:</span>
+              <span>${(totalPurchase || 0).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Remaining:</span>
+              <span>${remaining.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Discount:</span>
+              <span>${discount}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Expenses:</span>
+              <span>${Expenses}</span>
+            </div>
+            <div className="flex justify-between text-base font-semibold border-t border-gray-600">
+              <span>Total Remaining:</span>
+              <span>${totalRemainingfunction()}</span>
+            </div>
+          </div>
+          <QRCode value={qrData} size={120} />
         </div>
         <h1>Generated by Rahat System</h1>
       </div>
