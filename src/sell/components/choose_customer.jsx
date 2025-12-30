@@ -1,57 +1,72 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User } from "lucide-react";
+import AddNewCustomerModal from "./add_new_customer";
 
 export default function CustomerSelect({
   activePanel,
   setActivePanel,
   customers,
+  setCustomers,
   selected,
   setSelected,
 }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [showAddModal, setShowAddModal] = useState(false);
   const inputRef = useRef(null);
 
   const filtered = customers.filter((c) =>
     c.toLowerCase().includes(query.toLowerCase())
   );
 
- 
+// افزودن مشتری جدید – نسخه اصلاح‌شده
+const handleAddCustomer = (newCustomer) => {
+  if (!newCustomer?.name?.trim()) return;
+
+  const customer = {
+    id: newCustomer.id || Date.now(),
+    name: newCustomer.name.trim(),
+    group: newCustomer.group || "Default",
+  };
+
+  setCustomers((prev) => [...prev, customer]);
+  setSelected(customer);
+  setQuery(customer.name);
+  setShowAddModal(false);
+};
 
   const handleKeyDown = (e) => {
-     if (e.key === "Delete") {
-    e.preventDefault();
-    setQuery("");
-    setActiveIndex(-1);
-    setOpen(true); 
-    return;
-  }
     if (!open) return;
 
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex((i) => (i + 1) % filtered.length);
-    }
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((i) =>
-        i <= 0 ? filtered.length - 1 : i - 1
-      );
-    }
-
-    if (e.key === "Enter" && activeIndex >= 0) {
-      e.preventDefault();
-      const value = filtered[activeIndex];
-      setSelected(value);
-      setQuery(value);
-      setOpen(false);
-    }
-
-    if (e.key === "Escape") {
-      setOpen(false);
+    switch (e.key) {
+      case "Delete":
+        e.preventDefault();
+        setQuery("");
+        setActiveIndex(-1);
+        setOpen(true);
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setActiveIndex((i) => (i + 1) % filtered.length);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setActiveIndex((i) => (i <= 0 ? filtered.length - 1 : i - 1));
+        break;
+      case "Enter":
+        if (activeIndex >= 0) {
+          e.preventDefault();
+          const value = filtered[activeIndex];
+          setSelected(value);
+          setQuery(value);
+          setOpen(false);
+        }
+        break;
+      case "Escape":
+        setOpen(false);
+        break;
     }
   };
 
@@ -65,13 +80,15 @@ export default function CustomerSelect({
         }}
       >
         <User size={22} className="text-gray-400" />
-
         <input
           ref={inputRef}
           type="text"
-          value={query|| ""}
-          onClick={()=>{setActivePanel("customer"); setOpen(true)}}
+          value={query || ""}
           placeholder="Select or search customer..."
+          onClick={() => {
+            setActivePanel("customer");
+            setOpen(true);
+          }}
           onChange={(e) => {
             setActivePanel("customer");
             setQuery(e.target.value);
@@ -84,7 +101,7 @@ export default function CustomerSelect({
       </div>
 
       <AnimatePresence>
-        {open && filtered.length > 0 && activePanel === "customer" && (
+        {open && activePanel === "customer" && (
           <motion.ul
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -109,9 +126,29 @@ export default function CustomerSelect({
                 {item}
               </li>
             ))}
+
+            {filtered.length === 0 && (
+              <li
+                className="px-5 py-2 font-semibold text-blue-400 cursor-pointer hover:bg-gray-100 "
+                onClick={() => {
+                  setShowAddModal(true);
+                  setOpen(false);
+                }}
+              >
+                + Add new customer
+              </li>
+            )}
           </motion.ul>
         )}
       </AnimatePresence>
+
+      {showAddModal && (
+        <AddNewCustomerModal
+          setShowAddModal={setShowAddModal}
+          onAddCustomer={handleAddCustomer}
+          defaultGroupOptions={["Retail", "Wholesale", "VIP"]}
+        />
+      )}
     </div>
   );
 }

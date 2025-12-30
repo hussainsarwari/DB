@@ -4,17 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useLanguage } from "../../Provider/LanguageContext";
 export default function ProductSearch({
   setActivePanel,
   activePanel,
   query,
   setQuery,
   products,
+  setshowSellAmountModel,
   setSelected,
 }) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
-
+  const { darkmode, t, dir } = useLanguage();
   const filtered = products.filter((item) =>
     item.toLowerCase().includes(query.toLowerCase())
   );
@@ -85,59 +87,86 @@ export default function ProductSearch({
   }, [query]);
 
   return (
-    <div className="relative w-full mx-auto mt-10">
-      <div className="flex items-center gap-3 px-5 py-3 bg-white shadow-md rounded-xl focus-within:shadow-lg">
-        <Search className="text-gray-400" size={22} />
-        <input
-          type="text"
-            ref={inputRef}
-              onClick={()=>{setActivePanel("product");
-                setIsOpen(true);
-              }}
-          placeholder="press / to search  product name or ID"
-          value={query}
-          onChange={(e) => {
-            setActivePanel("product");
-            setQuery(e.target.value);
-            setActiveIndex(-1);
-          }}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsOpen(true)}
-          className="w-full text-base text-gray-800 placeholder-gray-400 outline-none"
-        />
-      </div>
+<div className="relative w-full mx-auto mt-10">
+  {/* Search Input */}
+  <div
+    className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-sm focus-within:shadow-md transition
+      ${darkmode
+        ? "bg-gray-800 "
+        : "bg-white border border-gray-200"
+      }`}
+  >
+    <Search
+      size={22}
+      className={darkmode ? "text-gray-400" : "text-gray-400"}
+    />
 
-      <AnimatePresence>
-        {isOpen && activePanel === "product" && (
-          <motion.ul
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="absolute z-20 w-full mt-2 overflow-hidden bg-white shadow-lg rounded-xl"
+    <input
+      ref={inputRef}
+      type="text"
+      placeholder="Press / to search product"
+      value={query}
+      onClick={() => {
+        setActivePanel("product");
+        setIsOpen(true);
+      }}
+      onChange={(e) => {
+        setActivePanel("product");
+        setQuery(e.target.value);
+        setActiveIndex(-1);
+      }}
+      onKeyDown={handleKeyDown}
+      onFocus={() => setIsOpen(true)}
+      className={`w-full text-base bg-transparent outline-none
+        ${darkmode
+          ? "text-gray-100 placeholder-gray-400"
+          : "text-gray-800 placeholder-gray-400"
+        }`}
+    />
+  </div>
+
+  {/* Dropdown */}
+  <AnimatePresence>
+    {isOpen && activePanel === "product" && (
+      <motion.ul
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        className={`absolute z-20 w-full mt-2 overflow-hidden rounded-xl shadow-lg
+          ${darkmode
+            ? "bg-slate-800 border border-slate-700"
+            : "bg-white border border-gray-200"
+          }`}
+      >
+        {filtered.map((item, index) => (
+          <li
+            key={item}
+            onMouseEnter={() => setActiveIndex(index)}
+            onClick={() => {
+              setshowSellAmountModel(true);
+              setSelected(item);
+              setQuery("");
+              setIsOpen(false);
+              setActiveIndex(-1);
+            }}
+            className={`px-5 py-2 cursor-pointer text-sm transition-colors
+              ${
+                index === activeIndex
+                  ? darkmode
+                    ? "bg-slate-600 text-white"
+                    : "bg-gray-200 text-gray-900"
+                  : darkmode
+                    ? "text-gray-200 hover:bg-slate-700"
+                    : "text-gray-900 hover:bg-gray-100"
+              }`}
           >
-            {filtered.map((item, index) => (
-              <li
-                key={item}
-                className={`px-5 py-2 cursor-pointer transition-colors
-                  ${
-                    index === activeIndex
-                      ? "bg-blue-500 text-white"
-                      : "text-gray-800 hover:bg-blue-100"
-                  }`}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => {
-                  setSelected(item);
-                  setQuery("");
-                  setIsOpen(false);
-                  setActiveIndex(-1);
-                }}
-              >
-                {item}
-              </li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </div>
+            {item}
+          </li>
+        ))}
+      </motion.ul>
+    )}
+  </AnimatePresence>
+</div>
+
   );
 }

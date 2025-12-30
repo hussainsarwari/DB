@@ -228,7 +228,7 @@ ${productList}
   ];
   return (
     <div
-      className={`md:w-[400px] w-full relative  mx-auto p-6 flex flex-col gap-5 shadow-lg rounded-xl    print-area ${bgClass}`}
+      className={`md:w-[400px] w-full relative  mx-auto p-6 flex flex-col gap-5 shadow-lg rounded-xl h-fit   print-area ${bgClass}`}
     >
       <div
         className={`hidden    w-full gap-2 p-1 print-header border-b border-gray-300 ${" text-gray-900"}`}
@@ -410,6 +410,7 @@ ${productList}
               onChange={(e) => {
                 if (e.target.value === "other") {
                   setShowCustomDriver(true);
+                  setSelectedDriver("other");
                 } else {
                   setSelectedDriver(e.target.value);
                   setShowCustomDriver(false);
@@ -435,7 +436,6 @@ ${productList}
               className={inputClass}
             />
           )}
-          {!showCustomDriver && (
             <input
               type="number"
               value={Expenses}
@@ -444,7 +444,7 @@ ${productList}
               placeholder="Delivery Fee"
               className={inputClass}
             />
-          )}
+       
         </div>
         <div className="gap-2 my-5">
           <textarea

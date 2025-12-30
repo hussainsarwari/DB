@@ -8,15 +8,19 @@ import SidebarSales from './components/sell_page_sidebar';
 import ChooseProduct  from "./components/choose_product";
 import ChooseCustomer from "./components/choose_customer";
 import Sell_amound from "./components/sell_amound";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 export default function Dashboard() {
   const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen ,t} = useLanguage();
 const [activePanel, setActivePanel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
+  const [Customers, setCustomers] = useState([]);
   const [totalPurchase,setTotalPurchase] = useState(0);
   const [queryCustomer, setQueryCustomer] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showSellAmountModel,setshowSellAmountModel]=useState(false)
 const [items, setItems] = useState([]);
   const products = [
   "Laptop",
@@ -29,6 +33,7 @@ const [items, setItems] = useState([]);
   "Monitor",
 ];
 const customers = [
+  "Guest Customer",
   "Ali Reza",
   "Sara Ahmadi",
   "Mohammad Karimi",
@@ -84,10 +89,20 @@ const customers = [
 
           {!loading && (
             <div className={` block  md:flex  p-5 ${dir}`}>
-            <div className="flex flex-col w-full gap-5 p-3 my-10 md:my-0">
-<ChooseProduct query={query} setQuery={setQuery} selected={selected} setSelected={setSelected} products={products} activePanel={activePanel} setActivePanel={setActivePanel}/>
-<ChooseCustomer query={queryCustomer} setQuery={setQueryCustomer} selected={selectedCustomer} setSelected={setSelectedCustomer} customers={customers} activePanel={activePanel} setActivePanel={setActivePanel} />
-<Sell_amound selectedProduct={selected}   setTotalPurchase={setTotalPurchase} items={items} setItems={setItems}/>
+            <div className="flex flex-col w-full gap-2 pr-3 my-10 md:my-0">
+              <div className="flex flex-col gap-4 md:flex-row">
+                
+<ChooseProduct  query={query} setQuery={setQuery} selected={selected} setSelected={setSelected} products={products} activePanel={activePanel} setActivePanel={setActivePanel} setshowSellAmountModel={setshowSellAmountModel}/>
+<ChooseCustomer query={queryCustomer} setCustomers={setCustomers} setQuery={setQueryCustomer} selected={selectedCustomer} setSelected={setSelectedCustomer} customers={customers} activePanel={activePanel} setActivePanel={setActivePanel} />
+              </div>
+{showSellAmountModel ?
+<Sell_amound selectedProduct={selected}   setTotalPurchase={setTotalPurchase} items={items} setItems={setItems} setshowSellAmountModel={setshowSellAmountModel}/>:
+ <DotLottieReact
+      src="../../public/animation/No data.lottie"
+      loop
+      autoplay
+    />
+}
             </div>
             <SidebarSales selectedcustomer={selectedCustomer} totalPurchase={totalPurchase} itemsList={items}/>
           
