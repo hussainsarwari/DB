@@ -33,9 +33,6 @@
       { stock:12,  id: "78901", name: "Printer", barcode: "7890123456789", costPrice: 250 },
       { stock:12,  id: "89012", name: "Monitor", barcode: "8901234567890", costPrice: 300 },
     ];
-
-
-    
   const customers = [
     "Guest Customer",
     "Ali Reza",
