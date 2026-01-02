@@ -113,16 +113,16 @@ export default function SaleDetailsSection({
             <col className="w-[10%]" />
             <col className="w-[6%]" />
           </colgroup>
-          <thead className={`border-b   ${darkmode ? "bg-gray-800" : "bg-gray-400 text-white"}`}>
+          <thead className={`border-b    ${darkmode ? "bg-gray-800" : "bg-gray-400 text-white"}`}>
             <tr className="font-medium text-center whitespace-nowrap">
-              <th className="text-left">Product</th>
+              <th className="p-2 text-left rounded-tl-xl">Product</th>
               <th>Qty</th>
               <th>Unit Price</th>
               <th>Unit</th>
               <th className="hidden md:table-cell">Stock</th>
               <th className="hidden md:table-cell">Note</th>
               <th>Total</th>
-              <th></th>
+              <th className="rounded-tr-xl ">action</th>
             </tr>
           </thead>
           <AnimatePresence>
