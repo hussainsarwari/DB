@@ -96,7 +96,14 @@
   <ChooseProduct  query={query} setQuery={setQuery} selected={selected} setSelected={setSelected}  activePanel={activePanel} setActivePanel={setActivePanel} setshowSellAmountModel={setshowSellAmountModel} products={products}/>
   <ChooseCustomer query={queryCustomer} setCustomers={setCustomers} setQuery={setQueryCustomer} selected={selectedCustomer} setSelected={setSelectedCustomer} customers={customers} activePanel={activePanel} setActivePanel={setActivePanel} />
                 </div>
- 
+  {showSellAmountModel ?
+  <Sell_amound selectedProduct={selected}   setTotalPurchase={setTotalPurchase} items={items} setItems={setItems} setshowSellAmountModel={setshowSellAmountModel} productData={products}/>:
+  <DotLottieReact
+        src="../../public/animation/No data.lottie"
+        loop
+        autoplay
+      />
+  }
               </div>
               <SidebarSales selectedcustomer={selectedCustomer} totalPurchase={totalPurchase} itemsList={items}/>
             
