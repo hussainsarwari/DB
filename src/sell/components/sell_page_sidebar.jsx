@@ -69,6 +69,13 @@ const [isDiscountNumber,setIsDiscountNumber]=useState(true)
   const [selectedDriver, setSelectedDriver] = useState("");
   const [showCustomDriver, setShowCustomDriver] = useState(false);
   const [customDriverName, setCustomDriverName] = useState("");
+  const [Selected_commission_based_worker,setSelected_commission_based_worker]=useState()
+  const [commission_based_worker_list,setCommission_based_worker_list]=useState([
+      { id: 1, name: "Ahmad" },
+    { id: 2, name: "Karim" },
+    { id: 3, name: "Sami" },
+    { id: 4, name: "Latif" },
+  ])
   const drivers = [
     { id: 1, name: "Ahmad" },
     { id: 2, name: "Karim" },
@@ -399,8 +406,8 @@ ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
             type="text"
             value={customDriverName}
             onChange={e => setCustomDriverName(e.target.value)}
-            placeholder={t.sell_side_bar.driverPlaceholder}
-            className={inputClass}
+            placeholder={t.sell_side_bar.driverName}
+          className={inputClass}
           />
         )}
 
@@ -410,8 +417,9 @@ ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
           onChange={e => setExpenses(e.target.value)}
           placeholder={t.sell_side_bar.expenses}
           className={inputClass}
-        />
+          />
       </div>
+
 
       <textarea
         rows={1}
@@ -420,6 +428,24 @@ ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
         placeholder={t.sell_side_bar.note}
         className={`${inputClass} resize-none`}
       />
+
+
+         <select
+          value={Selected_commission_based_worker}
+          onChange={e => {
+           setSelected_Commission_based_worker(e.target.value)
+          }}
+          className={  `w-full px-3 py-2 rounded-md border-1  text-sm outline-none transition 
+${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
+        >
+          <option value="">{t.sell_side_bar.select_commission_based_worker}</option>
+          {commission_based_worker_list.map(d => (
+            <option key={d.id} value={d.name} className={`${darkmode? "bg-gray-900":"bg-gray-100"}`}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+      
 
       {/* ================= BUTTONS ================= */}
       <button onClick={handleSell} disabled={working} className={btnPrimary}>
