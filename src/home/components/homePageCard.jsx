@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../../component/loading/Loading";
+import Loading from "../../components/loading/Loading";
 import Swal from "sweetalert2";
 import {
   FiShoppingCart,

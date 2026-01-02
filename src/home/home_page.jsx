@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
-import Homepagefillter from "../component/Homepagefillter";
+import Homepagefillter from "../components/Homepagefillter";
 import HomePageCard from "./components/homePageCard";
-import ProductionProgress from "../component/ProductionProgress";
+import ProductionProgress from "../components/ProductionProgress";
 import { useLanguage } from "../Provider/LanguageContext";
 
 // Lazy load کامپوننت‌های سنگین

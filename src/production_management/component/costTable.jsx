@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../../component/loading/react_loader_spinner";
+import Loading from "../../components/loading/react_loader_spinner";
 import { useLanguage } from "../../Provider/LanguageContext";
 
 const productionDetails = [

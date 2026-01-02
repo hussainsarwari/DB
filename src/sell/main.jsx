@@ -1,8 +1,8 @@
   import React, { useState, useEffect } from "react";
   import { useLanguage } from "../Provider/LanguageContext";
-  import Header from "../component/header/header";
-  import Sidebar from "../component/sidebar/sidebar";
-  import Loading from "../component/loading/react_loader_spinner";
+  import Header from "../components/header/header";
+  import Sidebar from "../components/sidebar/sidebar";
+  import Loading from "../components/loading/react_loader_spinner";
   import "./components/sell_reciept.css"
   import SidebarSales from './components/sell_page_sidebar';
   import ChooseProduct  from "./components/choose_product";

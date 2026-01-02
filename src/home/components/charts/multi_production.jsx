@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import Loading from "../../../component/loading/Loading";
+import Loading from "../../../components/loading/Loading";
 import { useLanguage } from "../../../Provider/LanguageContext";
 
 export default React.memo(function ProductionShare() {
