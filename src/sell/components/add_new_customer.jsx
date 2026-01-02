@@ -2,12 +2,15 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Phone, Mail, MapPin, Users, FileText, X } from "lucide-react";
 import Swal from "sweetalert2";
+import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function AddNewCustomerModal({
   setShowAddModal,
   onAddCustomer,
   defaultGroupOptions = [],
 }) {
+  const { darkmode } = useLanguage();
+
   const [customer, setCustomer] = useState({
     name: "",
     lastname: "",
@@ -79,10 +82,30 @@ export default function AddNewCustomerModal({
 
   const Field = ({ icon: Icon, children }) => (
     <div className="relative mb-3">
-      <Icon className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+      <Icon
+        className={`absolute w-4 h-4 -translate-y-1/2 left-3 top-1/2 ${
+          darkmode ? "text-gray-400" : "text-gray-400"
+        }`}
+      />
       {children}
     </div>
   );
+
+  const inputClass = `w-full py-3 pl-10 pr-3 rounded-lg focus:ring-2 ${
+    darkmode
+      ? "bg-gray-800 border border-gray-600 text-gray-100 focus:ring-blue-500 placeholder-gray-400"
+      : "bg-white border border-gray-200 text-gray-800 focus:ring-blue-200 placeholder-gray-400"
+  }`;
+
+  const modalBg = darkmode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800";
+
+  const buttonCancel = darkmode
+    ? "px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+    : "px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200";
+
+  const buttonAdd = darkmode
+    ? "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+    : "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600";
 
   return (
     <AnimatePresence>
@@ -93,21 +116,22 @@ export default function AddNewCustomerModal({
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="flex flex-col w-full max-w-[350px] max-w-md gap-3 p-6 bg-white shadow-xl rounded-2xl"
+          className={`flex flex-col w-full max-w-md gap-3 p-6 shadow-xl rounded-2xl ${modalBg}`}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Add New Customer</h2>
+            <h2 className="text-lg font-semibold">{darkmode ? "Add New Customer" : "Add New Customer"}</h2>
             <button
               onClick={() => setShowAddModal(false)}
-              className="p-1 text-gray-400 rounded hover:text-gray-600"
+              className={`p-1 rounded hover:${darkmode ? "text-gray-300" : "text-gray-600"}`}
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
+          {/* Fields */}
           <Field icon={User}>
             <input
               ref={refs.name}
@@ -116,7 +140,7 @@ export default function AddNewCustomerModal({
               onChange={handleChange}
               onKeyDown={(e) => handleKeyDown(e, refs.lastname)}
               placeholder="Customer name *"
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -128,7 +152,7 @@ export default function AddNewCustomerModal({
               onChange={handleChange}
               onKeyDown={(e) => handleKeyDown(e, refs.phone)}
               placeholder="Last name *"
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -141,7 +165,7 @@ export default function AddNewCustomerModal({
               onKeyDown={(e) => handleKeyDown(e, refs.whatsapp)}
               placeholder="Phone number"
               type="tel"
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -154,7 +178,7 @@ export default function AddNewCustomerModal({
               onKeyDown={(e) => handleKeyDown(e, refs.email)}
               placeholder="WhatsApp number"
               type="tel"
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -167,7 +191,7 @@ export default function AddNewCustomerModal({
               onKeyDown={(e) => handleKeyDown(e, refs.address)}
               placeholder="Email address"
               type="email"
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -180,7 +204,7 @@ export default function AddNewCustomerModal({
               onKeyDown={(e) => handleKeyDown(e, refs.group)}
               placeholder="Address"
               rows={2}
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
@@ -191,7 +215,7 @@ export default function AddNewCustomerModal({
               value={customer.group}
               onChange={handleChange}
               onKeyDown={(e) => handleKeyDown(e, refs.notes)}
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             >
               <option value="">Select group</option>
               {defaultGroupOptions.map((g) => (
@@ -210,21 +234,15 @@ export default function AddNewCustomerModal({
               onChange={handleChange}
               placeholder="Internal notes"
               rows={2}
-              className="w-full py-3 pl-10 pr-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-200"
+              className={inputClass}
             />
           </Field>
 
           <div className="flex justify-end gap-3 mt-4">
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-            >
+            <button onClick={() => setShowAddModal(false)} className={buttonCancel}>
               Cancel
             </button>
-            <button
-              onClick={handleAdd}
-              className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
-            >
+            <button onClick={handleAdd} className={buttonAdd}>
               Add Customer
             </button>
           </div>

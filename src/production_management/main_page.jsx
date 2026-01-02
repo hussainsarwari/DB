@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "../Provider/LanguageContext";
-import Header from "../component/header/header";
-import Sidebar from "../component/sidebar/sidebar";
-import Loading from "../component/loading/react_loader_spinner";
+import Header from "../components/header/header";
+import Sidebar from "../components/sidebar/sidebar";
+import Loading from "../components/loading/react_loader_spinner";
 import KPIcard from "./component/KPIcard";
 import Filters from "./component/Fillters";
 import ProductionDetailTable from "./component/costTable";
 import CostChart from "./component/costchart";
 import InitiaProduct from './component/initialProduct'
-import ProductionProgress from "../component/ProductionProgress";
+import ProductionProgress from "../components/ProductionProgress";
 
 export default function Dashboard() {
   const { darkmode, dir, mobileMenuOpen, setMobileMenuOpen ,t} = useLanguage();

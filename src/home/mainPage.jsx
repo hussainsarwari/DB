@@ -8,11 +8,11 @@ import {
   MessageSquare,
   X,
 } from "lucide-react";
-import Sidebar from "../component/sidebar/sidebar";
+import Sidebar from "../components/sidebar/sidebar";
 import HomePage from "./home_page";
 import { useLanguage } from "../Provider/LanguageContext";
-import Header from "../component/header/header";
-import Loading from '../component/loading/react_loader_spinner'
+import Header from "../components/header/header";
+import Loading from '../components/loading/react_loader_spinner'
 
 export default function DashboardMainPage() {
   const { dir, darkmode, setMobileMenuOpen, mobileMenuOpen, setIsMobile } =
