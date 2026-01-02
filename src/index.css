@@ -2,3 +2,19 @@
 *{
     margin: 0;
 }
+@font-face {
+  font-family: 'yekan_bakh';
+  src: url('/public/font/myfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'yekan_bakh_bold';
+  src: url('/public/font/YekanBakh-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: bold;
+}
+
+body {
+  font-family: 'yekan_bakh','yekan_bakh_bold', sans-serif;
+}
