@@ -12,14 +12,18 @@ import {
   Sun,
   MenuIcon,
   XIcon,
+  Trash,
+  Trash2,
+  GitBranch,
 } from "lucide-react";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { CgBoy } from "react-icons/cg";
 import { FaMoneyBill } from "react-icons/fa";
-import { MdManageHistory, MdWebAsset } from "react-icons/md";
+import { MdAccountBalance, MdManageHistory, MdWebAsset } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../Provider/LanguageContext";
 import { useState } from "react";
+import { BsPeople } from "react-icons/bs";
 
 const menuItems = [
   { key: "home", label: "home", icon: <Home size={18} /> },
@@ -35,6 +39,10 @@ const menuItems = [
   { key: "expensive", label: "expensives", icon: <FaMoneyBill size={18} /> },
   { key: "stock", label: "stock", icon: <Box size={18} /> },
   { key: "staff", label: "staff", icon: <ClipboardEdit size={18} /> },
+  { key: "branches", label: "branches", icon: <GitBranch size={18} /> },
+  { key: "Accounting", label: "Accounting", icon: <MdAccountBalance size={18} /> },
+  { key: "Trash", label: "Trash", icon: <Trash2 size={18} /> },
+  { key: "partners", label: "partners", icon: <BsPeople size={18} /> },
   { key: "Fixed_asset", label: "Fixed_asset", icon: <MdWebAsset size={18} /> },
   {
     key: "language",
@@ -106,8 +114,10 @@ export default function Sidebar() {
 
       {/* Menu Items */}
       <nav className="flex flex-col justify-between h-full">
-        <ul className="flex flex-col gap-1">
+        <div className="overflow-auto h-130">
+        <ul className="flex flex-col gap-1 ">
           {menuItems.map((item) => (
+            
             <li
               key={item.key}
               className={`flex items-center gap-3 rounded px-3 py-2 text-sm 
@@ -115,6 +125,7 @@ export default function Sidebar() {
                 ${active === item.key && "bg-sky-500 text-white"}
               `}
             >
+              
               {!item.noLink ? (
                 <Link
                   to={`/${item.key}`}
@@ -167,8 +178,9 @@ export default function Sidebar() {
               )}
             </li>
           ))}
+          
         </ul>
-
+</div>
         {/* Footer */}
         <ul className="flex flex-col gap-1 mb-4 border-t border-[#b6b6b6]">
           <li

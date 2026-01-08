@@ -43,7 +43,7 @@ export default function HomePageControls({ onFilter, onReset }) {
         <div className="flex flex-col w-full gap-3 sm:flex-row sm:w-auto sm:gap-4">
           <button
             onClick={onFilter}
-            className={`w-full sm:w-auto px-5 py-2.5 text-sm font-medium   rounded-lg shadow hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all ${  darkmode ? "bg-gray-900 text-gray-100" : "bg-blue-500 text-gray-100"}`}
+            className={`w-full sm:w-30 px-3 py-2.5 text-sm font-medium   rounded-lg shadow hover:bg-blue-400 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all ${  darkmode ? "bg-gray-900 text-gray-100" : "bg-sky-500 text-gray-100"}`}
           >
             {t.applyFilter}
           </button>

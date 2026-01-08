@@ -393,6 +393,7 @@ ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}>
           className={  `w-full px-3 py-2 rounded-md border-1  text-sm outline-none transition 
 ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
         >
+          <option value="">select driver</option>
           {drivers.map(d => (
             <option key={d.id} value={d.name} className={`${darkmode? "bg-gray-900":"bg-gray-100"}`}>
               {d.name}
