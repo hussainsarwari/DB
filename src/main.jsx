@@ -5,7 +5,6 @@ import App from "./App";
 import "./index.css";
 import { LanguageProvider } from "./Provider/LanguageContext";
 
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
