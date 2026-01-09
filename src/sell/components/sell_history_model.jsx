@@ -1,17 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import * as XLSX from "xlsx";
 import {
   Table,
   Button,
-  Input,
   Select,
   DatePicker,
   Space,
   Pagination,
   message,
+  Card,
+  ConfigProvider,
+  theme,
 } from "antd";
 import {
-  SearchOutlined,
   EyeOutlined,
   PrinterOutlined,
   UploadOutlined,
@@ -20,64 +21,59 @@ import {
 import { useLanguage } from "../../Provider/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
-import { Card, Col, Row } from "antd";
-const { Option } = Select;
+import InvoiceModal from "./InvoiceModal";
+
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 export default function SalesHistoryFull({ salesData = null, onClose }) {
   const fileInputRef = useRef(null);
-  const [importedSales, setImportedSales] = useState(null);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
   const { darkmode } = useLanguage();
 
-  const staticSales = Array.from({ length: 90 }, (_, i) => ({
-    invoice: `INV-${1000 + i}`,
-    customer: `Customer ${i + 1}`,
-    date: `2036-01-${String((i % 30) + 1).padStart(2, "0")}`,
-    total: `$${(100 + i * 10).toFixed(2)}`,
-    isReturn: i % 8 === 0,
-  }));
-
-  const finalSales = importedSales || salesData || staticSales;
-
-  const [query, setQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [finalSales, setFinalSales] = useState([]);
+  const [importedSales, setImportedSales] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [dateRange, setDateRange] = useState([]);
-  const [filteredSales, setFilteredSales] = useState(finalSales);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
 
-  // Filter logic
+  const staticSales = useMemo(
+    () =>
+      Array.from({ length: 90 }, (_, i) => ({
+        invoice: `INV-${1000 + i}`,
+        customer: `Customer ${i + 1}`,
+        date: `2036-01-${String((i % 30) + 1).padStart(2, "0")}`,
+        total: `$${(100 + i * 10).toFixed(2)}`,
+        isReturn: i % 8 === 0,
+      })),
+    []
+  );
+
   useEffect(() => {
-    let data = finalSales;
-    if (query) {
-      const lower = query.toLowerCase();
-      data = data.filter(
-        (s) =>
-          s.invoice.toLowerCase().includes(lower) ||
-          s.customer.toLowerCase().includes(lower)
-      );
-    }
-    if (filterStatus === "Completed") data = data.filter((s) => !s.isReturn);
-    else if (filterStatus === "Returned") data = data.filter((s) => s.isReturn);
+    setFinalSales(importedSales || salesData || staticSales);
+  }, [importedSales, salesData, staticSales]);
+
+  const filteredSales = useMemo(() => {
+    let data = [...finalSales];
 
     if (dateRange.length === 2) {
-      data = data.filter(
-        (s) =>
-          moment(s.date).isSameOrAfter(dateRange[0], "day") &&
-          moment(s.date).isSameOrBefore(dateRange[1], "day")
-      );
+      const [start, end] = dateRange;
+      data = data.filter((s) => s.date && moment(s.date).isBetween(start, end, "day", "[]"));
     }
 
-    setFilteredSales(data);
-    setCurrentPage(1);
-  }, [query, filterStatus, dateRange, finalSales]);
+    data.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
 
-  // Import backup
+    return data;
+  }, [finalSales, dateRange]);
+
+  const currentData = useMemo(
+    () => filteredSales.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [filteredSales, currentPage]
+  );
+
   const handleImportBackup = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
@@ -85,7 +81,6 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
         const workbook = XLSX.read(data, { type: "array" });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet);
-
         const mapped = json.map((row, i) => ({
           invoice: row.Invoice || `IMPORTED-${i + 1}`,
           customer: row.Customer || "Unknown",
@@ -93,23 +88,17 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
           total: `$${Number(row.Total).toFixed(2)}`,
           isReturn: row.Status === "Returned",
         }));
-
-        if (!mapped.length) {
-          message.error("The selected file does not contain valid data");
-          return;
-        }
-
+        if (!mapped.length) return message.error("Invalid file");
         setImportedSales(mapped);
-        message.success(`Backup imported successfully (${mapped.length} invoices)`);
+        message.success(`Backup imported (${mapped.length} invoices)`);
         e.target.value = "";
-      } catch (err) {
+      } catch {
         message.error("Failed to import backup file");
       }
     };
     reader.readAsArrayBuffer(file);
   };
 
-  // Backup
   const handleBackup = () => {
     const data = filteredSales.map((s) => ({
       Invoice: s.invoice,
@@ -118,57 +107,20 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
       Total: parseFloat(s.total.replace(/[^0-9.-]+/g, "")),
       Status: s.isReturn ? "Returned" : "Completed",
     }));
-
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sales History");
-
-    const fileName = `sales-backup-${new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace(/[:T]/g, "-")}.xlsx`;
-
-    XLSX.writeFile(workbook, fileName);
+    XLSX.writeFile(
+      workbook,
+      `sales-backup-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.xlsx`
+    );
     message.success("Backup created successfully");
   };
 
-  const columns = [
-    { title: "Invoice", dataIndex: "invoice", key: "invoice" },
-    { title: "Customer", dataIndex: "customer", key: "customer" },
-    { title: "Date", dataIndex: "date", key: "date" },
-    { title: "Total", dataIndex: "total", key: "total" },
-    {
-      title: "Status",
-      dataIndex: "isReturn",
-      key: "status",
-      render: (isReturn) => (
-        <span style={{ color: isReturn ? "red" : "green" }}>
-          {isReturn ? "Returned" : "Completed"}
-        </span>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EyeOutlined />}
-            type="primary"
-            onClick={() => setSelectedInvoice(record)}
-          />
-          <Button icon={<PrinterOutlined />} onClick={() => window.print()} />
-        </Space>
-      ),
-    },
-  ];
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 
-  const currentData = filteredSales.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const summary = {
+  const summary = useMemo(() => ({
     totalInvoices: filteredSales.length,
     returnedCount: filteredSales.filter((s) => s.isReturn).length,
     totalAmount: filteredSales.reduce(
@@ -181,144 +133,209 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
     returnedAmount: filteredSales
       .filter((s) => s.isReturn)
       .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
-  };
+  }), [filteredSales]);
 
-  const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
+  // تابع برای گرفتن مقادیر داینامیک ستون‌ها
+  const getUniqueValues = (data, key) => [...new Set(data.map((item) => item[key]))];
+
+  const columns = [
+    {
+      title: "Invoice",
+      dataIndex: "invoice",
+      key: "invoice",
+      align: "center",
+      sorter: (a, b) => a.invoice.localeCompare(b.invoice),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Select
+            mode="multiple"
+            placeholder="Select Invoice"
+            value={selectedKeys}
+            onChange={(values) => setSelectedKeys(values)}
+            style={{ width: 200, marginBottom: 8 }}
+            allowClear
+          >
+            {getUniqueValues(finalSales, "invoice").map((inv) => (
+              <Option key={inv} value={inv}>{inv}</Option>
+            ))}
+          </Select>
+          <Space>
+            <Button onClick={confirm} type="primary" size="small">Filter</Button>
+            <Button onClick={clearFilters} size="small">Reset</Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (values, record) => values.includes(record.invoice),
+    },
+    {
+      title: "Customer",
+      dataIndex: "customer",
+      key: "customer",
+      align: "center",
+      sorter: (a, b) => a.customer.localeCompare(b.customer),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Select
+            mode="multiple"
+            placeholder="Select Customer"
+            value={selectedKeys}
+            onChange={(values) => setSelectedKeys(values)}
+            style={{ width: 200, marginBottom: 8 }}
+            allowClear
+          >
+            {getUniqueValues(finalSales, "customer").map((c) => (
+              <Option key={c} value={c}>{c}</Option>
+            ))}
+          </Select>
+          <Space>
+            <Button onClick={confirm} type="primary" size="small">Filter</Button>
+            <Button onClick={clearFilters} size="small">Reset</Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (values, record) => values.includes(record.customer),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      align: "center",
+      sorter: (a, b) => moment(a.date).valueOf() - moment(b.date).valueOf(),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker
+            value={selectedKeys[0]}
+            onChange={(date) => setSelectedKeys(date ? [date] : [])}
+            style={{ width: 160, marginBottom: 8 }}
+          />
+          <Space>
+            <Button onClick={confirm} type="primary" size="small">Filter</Button>
+            <Button onClick={clearFilters} size="small">Reset</Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (values, record) => !values.length || moment(record.date).isSame(values[0], "day"),
+    },
+    {
+      title: "Total",
+      dataIndex: "total",
+      key: "total",
+      align: "center",
+      sorter: (a, b) => parseFloat(a.total.replace(/[^0-9.-]+/g, "")) - parseFloat(b.total.replace(/[^0-9.-]+/g, "")),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Select
+            mode="multiple"
+            placeholder="Select Total"
+            value={selectedKeys}
+            onChange={(values) => setSelectedKeys(values)}
+            style={{ width: 160, marginBottom: 8 }}
+            allowClear
+          >
+            {getUniqueValues(finalSales, "total").map((t) => (
+              <Option key={t} value={t}>{t}</Option>
+            ))}
+          </Select>
+          <Space>
+            <Button onClick={confirm} type="primary" size="small">Filter</Button>
+            <Button onClick={clearFilters} size="small">Reset</Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (values, record) => values.includes(record.total),
+    },
+    {
+      title: "Status",
+      dataIndex: "isReturn",
+      key: "status",
+      align: "center",
+      filters: [
+        { text: "Completed", value: false },
+        { text: "Returned", value: true },
+      ],
+      onFilter: (value, record) => record.isReturn === value,
+      render: (isReturn) => <span style={{ color: isReturn ? "red" : "green" }}>{isReturn ? "Returned" : "Completed"}</span>,
+    },
+    {
+      title: "Action",
+      key: "action",
+      width: 100,
+      align: "center",
+      render: (_, record) => (
+        <div className="flex justify-center gap-1">
+          <Button icon={<EyeOutlined />} size="small" type="primary" onClick={() => setSelectedInvoice(record)} />
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 overflow-auto"
-        style={{ background: darkmode ? "#111" : "#fff", padding: 20 }}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.25 }}
-      >
-        {/* Close button */}
-        <div style={{ textAlign: "right", marginBottom: 10 }}>
-          <Button onClick={onClose} type="primary">
-            Close
-          </Button>
-        </div>
+    <ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
+      <AnimatePresence>
+        <motion.div
+          className={`fixed inset-0 z-50 overflow-auto p-4 ${darkmode ? "bg-gray-900" : "bg-white"}`}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.25 }}
+        >
+          {/* Header */}
+          <div className="flex flex-col items-start justify-between gap-2 mb-3 md:flex-row md:items-center">
+            <Space wrap>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportBackup} style={{ display: "none" }} />
+              <Button icon={<UploadOutlined />} type="primary" onClick={() => fileInputRef.current.click()}>Import Backup</Button>
+              <Button icon={<DatabaseOutlined />} onClick={handleBackup}>Backup</Button>
+              <Button icon={<PrinterOutlined />} onClick={() => window.print()}>Print</Button>
+              <RangePicker value={dateRange.length ? dateRange : undefined} onChange={(dates) => setDateRange(dates || [])} />
+            </Space>
+            <Button onClick={onClose} type="primary">Close</Button>
+          </div>
 
-        {/* Summary */}
-        <div  className="flex gap-4 m-2">
-          {[
-            ["Total Invoices", summary.totalInvoices],
-            ["Returned", summary.returnedCount],
-            ["Total Amount", formatCurrency(summary.totalAmount)],
-            ["Completed Amount", formatCurrency(summary.completedAmount)],
-            ["Returned Amount", formatCurrency(summary.returnedAmount)],
-            ["Total Profit", `$${summary.totalProfit}`],
-          ].map(([title, value], i) => (
-            <div className="w-70" key={i}>
-              <Card
-                hoverable
-                className={`p-1 text-center ${
-                  darkmode ? "bg-slate-800 text-gray-200" : "bg-white text-gray-800"
-                }`}
-              >
-                <div className="text-sm font-medium">{title}</div>
-                <div className="text-xl font-semibold">{value}</div>
-              </Card>
-            </div>
-          ))}
-        </div>
+          {/* Summary */}
+          <div className="flex gap-2 py-3">
+            {[
+              ["Total Invoices", summary.totalInvoices],
+              ["Returned", summary.returnedCount],
+              ["Total Amount", formatCurrency(summary.totalAmount)],
+              ["Completed Amount", formatCurrency(summary.completedAmount)],
+              ["Returned Amount", formatCurrency(summary.returnedAmount)],
+            ].map(([title, value], i) => (
+              <div className=" sm:w-1/5" key={i}>
+                <Card hoverable className="text-center shadow-md">
+                  <div className="text-sm font-medium">{title}</div>
+                  <div className="text-xl font-semibold">{value}</div>
+                </Card>
+              </div>
+            ))}
+          </div>
 
-<div className="flex flex-row-reverse justify-between p-5">
-        {/* Actions */}
-        <Space style={{}}>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={handleImportBackup}
-            style={{ display: "none" }}
+          {/* Table */}
+          <Table
+            columns={columns}
+            dataSource={currentData}
+            rowKey="invoice"
+            bordered
+            pagination={false}
+            scroll={{ x: "max-content", y: 400 }}
           />
-          <Button icon={<UploadOutlined />} type="primary" onClick={() => fileInputRef.current.click()}>
-            Import Backup
-          </Button>
-          <Button icon={<DatabaseOutlined />} onClick={handleBackup}>
-            Backup
-          </Button>
-          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
-            Print
-          </Button>
-        </Space>
 
-        {/* Filters */}
-        <Space  >
-          <Input
-            placeholder="Search Invoice / Customer"
-            prefix={<SearchOutlined />}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={filteredSales.length}
+            showQuickJumper
+            showTotal={(total) => `Total ${total} items`}
+            onChange={setCurrentPage}
+            align="center"
+            style={{ marginTop: 20, textAlign: "center" }}
           />
-          <Select value={filterStatus} onChange={setFilterStatus} style={{ width: 150 }}>
-            <Option value="All">All</Option>
-            <Option value="Completed">Completed</Option>
-            <Option value="Returned">Returned</Option>
-          </Select>
-          <RangePicker
-            value={dateRange}
-            onChange={(dates) => setDateRange(dates)}
-          />
-        </Space>
-</div>
-        {/* Table */}
-        <Table
-          columns={columns}
-          dataSource={currentData}
-          pagination={false}
-          rowKey="invoice"
-          bordered
-          style={{ background: darkmode ? "#222" : "#fff" }}
-        />
 
-        {/* Pagination */}
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={filteredSales.length}
-          onChange={setCurrentPage}
-          style={{ marginTop: 20, textAlign: "right" }}
-        />
-
-        {/* Invoice Modal */}
-        <AnimatePresence>
-          {selectedInvoice && (
-            <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                className="w-11/12 max-w-lg p-6 bg-white shadow-lg rounded-xl"
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-              >
-                <h3 className="mb-2 text-lg font-semibold">
-                  Invoice: {selectedInvoice.invoice}
-                </h3>
-                <p>Customer: {selectedInvoice.customer}</p>
-                <p>Date: {selectedInvoice.date}</p>
-                <p>Total: {selectedInvoice.total}</p>
-                <p>Status: {selectedInvoice.isReturn ? "Returned" : "Completed"}</p>
-                <div style={{ textAlign: "right", marginTop: 20 }}>
-                  <Button type="primary" onClick={() => setSelectedInvoice(null)}>
-                    Close
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </AnimatePresence>
+          {/* Invoice Modal */}
+          <AnimatePresence>
+            {selectedInvoice && <InvoiceModal visible={!!selectedInvoice} invoice={selectedInvoice} onClose={() => setSelectedInvoice(null)} />}
+          </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
+    </ConfigProvider>
   );
 }

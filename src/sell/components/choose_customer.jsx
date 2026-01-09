@@ -6,15 +6,17 @@ import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function CustomerSelect({
   activePanel,
+  open,setOpen,
   setActivePanel,
   customers,
   setCustomers,
+  setisOpenChooseProduct,
   selected,
   setSelected,
 }) {
   const { darkmode } = useLanguage();
   const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
+
   const [activeIndex, setActiveIndex] = useState(-1);
   const [showAddModal, setShowAddModal] = useState(false);
   const inputRef = useRef(null);
@@ -91,6 +93,8 @@ export default function CustomerSelect({
           onClick={() => {
             setActivePanel("customer");
             setOpen(true);
+          
+            setisOpenChooseProduct(false)
           }}
           onChange={(e) => {
             setActivePanel("customer");

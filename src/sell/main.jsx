@@ -17,7 +17,11 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   // query store the choose product input value
   const [query, setQuery] = useState("");
+    const [openCustomerBox, setopenCustomerBox] = useState(false);
   const [selected, setSelected] = useState(null);
+  // this flag use for handle if true show the select customer box if false dont show the select customer box
+  const [selectCustomerflg,setselectCustomerflg]=useState(false)
+    const [isOpenChooseProduct, setisOpenChooseProduct] = useState(false);
   const [Customers, setCustomers] = useState([]);
   const [totalPurchase, setTotalPurchase] = useState(0);
   const [queryCustomer, setQueryCustomer] = useState("");
@@ -146,21 +150,35 @@ export default function Dashboard() {
                       setQuery={setQuery}
                       selected={selected}
                       setSelected={setSelected}
+                      setselectCustomerflg={setselectCustomerflg}
                       activePanel={activePanel}
                       setActivePanel={setActivePanel}
+                      setopenCustomerBox={setopenCustomerBox}
+                      isOpen={isOpenChooseProduct}
+                      setIsOpen={setisOpenChooseProduct}
                       setshowSellAmountModel={setshowSellAmountModel}
                       products={products}
                     />
+                    {selectCustomerflg ? (
+                      
+                    
                     <ChooseCustomer
                       query={queryCustomer}
                       setCustomers={setCustomers}
                       setQuery={setQueryCustomer}
+                      setisOpenChooseProduct={setisOpenChooseProduct}
                       selected={selectedCustomer}
+                      open={openCustomerBox}
+                      setOpen={setopenCustomerBox}
                       setSelected={setSelectedCustomer}
                       customers={customers}
                       activePanel={activePanel}
                       setActivePanel={setActivePanel}
                     />
+                    ):(
+                      <>
+                      </>
+                    )}
                   </div>
                   {showSellAmountModel ? (
                     <Sell_amound

@@ -1,24 +1,28 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../Provider/LanguageContext";
 
 export default function ProductSearch({
   setActivePanel,
-  activePanel,
   query,
   setQuery,
   setshowSellAmountModel,
+  isOpen,
+  setselectCustomerflg,
+  setIsOpen,
+  setopenCustomerBox,
   setSelected,
-  products
+  products = []
 }) {
   const { darkmode } = useLanguage();
   const inputRef = useRef(null);
   const autoSelectRef = useRef(null);
 
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [isOpen, setIsOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   /* --------------------------------
      Helpers
@@ -26,51 +30,107 @@ export default function ProductSearch({
   const isBarcode = (v) => /^\d{8,}$/.test(v);
   const isNumeric = (v) => /^\d+$/.test(v);
 
+  const fuzzyMatch = (text, query) => {
+    let t = text.toLowerCase();
+    let q = query.toLowerCase();
+
+    let ti = 0;
+    for (let qi = 0; qi < q.length; qi++) {
+      ti = t.indexOf(q[qi], ti);
+      if (ti === -1) return false;
+      ti++;
+    }
+    return true;
+  };
+
+  const highlightMatch = (text, query) => {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, "ig");
+    return text.split(regex).map((part, i) =>
+      part.toLowerCase() === query.toLowerCase() ? (
+        <span key={i} className="font-semibold text-sky-500">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
   /* --------------------------------
-     Filter logic
+     Default suggestions (Top 10)
   -------------------------------- */
-  const filtered = (() => {
-    if (!query) return [];
+  const defaultSuggestions = useMemo(() => products.slice(0, 10), [products]);
+
+  /* --------------------------------
+     Filtering (ID & Barcode exact match, Name fuzzy)
+  -------------------------------- */
+  const filtered = useMemo(() => {
+    if (!query) return defaultSuggestions;
 
     const lower = query.toLowerCase();
+    const isNum = isNumeric(query);
+    const isBar = isBarcode(query);
 
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(lower) ||
-      String(p.id).includes(query) ||
-      (p.barcode && p.barcode.includes(query))
-    );
-  })();
+    return products.filter((p) => {
+      if (isBar && p.barcode === query) return true;
+      if (isNum && String(p.id) === query) return true;
+      return (
+        p.name.toLowerCase().includes(lower) ||
+        fuzzyMatch(p.name, query)
+      );
+    });
+  }, [query, products, defaultSuggestions]);
 
   /* --------------------------------
-     AUTO SELECT (Barcode / ID / Name)
+     Relevance scoring & top 10
+  -------------------------------- */
+  const results = useMemo(() => {
+    if (!query) return defaultSuggestions;
+
+    const q = query.toLowerCase();
+
+    return filtered
+      .map((item) => {
+        let score = 0;
+
+        if (item.barcode === query) score += 100; // Always top
+        if (String(item.id) === query) score += 90; // Always top
+        if (item.name.toLowerCase() === q) score += 80;
+        if (item.name.toLowerCase().startsWith(q)) score += 60;
+        if (item.name.toLowerCase().includes(q)) score += 40;
+        if (fuzzyMatch(item.name, query)) score += 20;
+
+        return { ...item, _score: score };
+      })
+      .sort((a, b) => b._score - a._score)
+      .slice(0, 10);
+  }, [query, filtered, defaultSuggestions]);
+
+  const noResult = query && !isLoading && results.length === 0;
+
+  /* --------------------------------
+     Auto-select (ID/Barcode only)
   -------------------------------- */
   useEffect(() => {
     if (!query || filtered.length !== 1) return;
 
     const item = filtered[0];
-    const lowerQuery = query.toLowerCase();
+    const exact = (isBarcode(query) && item.barcode === query) ||
+                  (isNumeric(query) && String(item.id) === query);
 
-    const exactBarcode =
-      isBarcode(query) && item.barcode === query;
-
-    const exactId =
-      isNumeric(query) && String(item.id) === query;
-
-    const exactName =
-      item.name.toLowerCase() === lowerQuery;
-
-    if (exactBarcode || exactId || exactName) {
+    if (exact) {
       autoSelectRef.current = setTimeout(() => {
         setSelected(item);
         setQuery("");
         setIsOpen(false);
         setActiveIndex(-1);
         setshowSellAmountModel(true);
-      }, 120); // simulate Enter
+      }, 120);
     }
 
     return () => clearTimeout(autoSelectRef.current);
-  }, [query, filtered]);
+  }, [query, filtered, setSelected, setQuery, setIsOpen, setActiveIndex, setshowSellAmountModel]);
 
   /* --------------------------------
      Keyboard navigation
@@ -81,30 +141,31 @@ export default function ProductSearch({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setActiveIndex((prev) =>
-          prev < filtered.length - 1 ? prev + 1 : 0
-        );
+        setActiveIndex((p) => (p < results.length - 1 ? p + 1 : 0));
         break;
 
       case "ArrowUp":
         e.preventDefault();
-        setActiveIndex((prev) =>
-          prev > 0 ? prev - 1 : filtered.length - 1
-        );
+        setActiveIndex((p) => (p > 0 ? p - 1 : results.length - 1));
         break;
 
       case "Enter":
-        e.preventDefault();
         if (activeIndex >= 0) {
-          const item = filtered[activeIndex];
+          const item = results[activeIndex];
           setSelected(item);
           setQuery("");
           setIsOpen(false);
+          setselectCustomerflg(true)
           setActiveIndex(-1);
           setshowSellAmountModel(true);
         }
         break;
 
+      case "Delete":
+        setIsOpen(false);
+        setQuery("");
+        setActiveIndex(-1);
+        break;
       case "Escape":
         setIsOpen(false);
         setQuery("");
@@ -117,77 +178,57 @@ export default function ProductSearch({
   };
 
   /* --------------------------------
-     Global shortcuts
+     Global shortcut (/)
   -------------------------------- */
   useEffect(() => {
-    setIsOpen(!!query);
-
-    const handleGlobalKeyDown = (e) => {
-      const tag = document.activeElement.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-
+    const handler = (e) => {
+      if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
       if (e.key === "/") {
         e.preventDefault();
         inputRef.current?.focus();
         setIsOpen(true);
       }
-
-      if (e.key === "Escape") {
-        setIsOpen(false);
-        inputRef.current?.blur();
-      }
     };
-
-    window.addEventListener("keydown", handleGlobalKeyDown);
-    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [query]);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <div className="relative w-full mx-auto mt-10">
-      {/* Search Input */}
-      <div
-        className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-md
-        ${darkmode ? "bg-gray-800" : "bg-white border border-gray-200"}`}
-      >
+      {/* Input */}
+      <div className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-md
+          ${darkmode ? "bg-gray-800" : "bg-white border border-gray-200"}`}>
         <Search size={22} className="text-gray-400" />
-
         <input
           ref={inputRef}
-          type="text"
-          placeholder="Scan barcode, enter ID or product name"
           value={query}
-          onClick={() => {
-            setActivePanel("product");
-            setIsOpen(true);
-          }}
+          autoFocus
+          placeholder="Scan barcode, enter ID or product name"
+          onFocus={() => {setIsOpen(true); setopenCustomerBox(false)}}
           onChange={(e) => {
             setActivePanel("product");
             setQuery(e.target.value.trim());
             setActiveIndex(-1);
+           
+            setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          onFocus={() => setIsOpen(true)}
-          className={`w-full text-base bg-transparent outline-none
-          ${darkmode
-            ? "text-gray-100 placeholder-gray-400"
-            : "text-gray-800 placeholder-gray-400"
-          }`}
+          className={`w-full bg-transparent outline-none
+          ${darkmode ? "text-gray-100" : "text-gray-800"}`}
         />
       </div>
 
       {/* Dropdown */}
       <AnimatePresence>
-        {isOpen && activePanel === "product" && filtered.length > 0 && (
+        {isOpen && (
           <motion.ul
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            className={`absolute z-20 w-full mt-2 overflow-hidden rounded-xl shadow-lg
-            ${darkmode
-              ? "bg-slate-800 border border-slate-700"
-              : "bg-white border border-gray-200"}`}
+            className={`absolute z-20 w-full mt-2 rounded-xl shadow-lg
+              ${darkmode ? "bg-slate-800" : "bg-white border border-gray-200"}`}
           >
-            {filtered.map((item, index) => (
+            {results.map((item, index) => (
               <li
                 key={item.id}
                 onMouseEnter={() => setActiveIndex(index)}
@@ -195,22 +236,27 @@ export default function ProductSearch({
                   setSelected(item);
                   setQuery("");
                   setIsOpen(false);
-                  setActiveIndex(-1);
+                  setselectCustomerflg(true)
+                  
                   setshowSellAmountModel(true);
                 }}
-                className={`px-5 py-2 cursor-pointer text-sm transition-colors
-                ${index === activeIndex
-                  ? darkmode
-                    ? "bg-slate-600 text-white"
-                    : "bg-gray-200 text-gray-900"
-                  : darkmode
-                    ? "text-gray-200 hover:bg-slate-700"
-                    : "text-gray-900 hover:bg-gray-100"
-                }`}
+                className={`px-5 py-2 text-sm cursor-pointer
+                  ${index === activeIndex
+                    ? "bg-sky-600 text-white"
+                    : darkmode
+                      ? "text-gray-200 hover:bg-slate-700"
+                      : "hover:bg-gray-100"
+                  }`}
               >
-                {item.id}: {item.name}   
+                {item.id}: {query ? highlightMatch(item.name, query) : item.name}
               </li>
             ))}
+
+            {noResult && (
+              <li className="px-5 py-3 text-sm text-center text-gray-400">
+                نتیجه‌ای یافت نشد
+              </li>
+            )}
           </motion.ul>
         )}
       </AnimatePresence>
