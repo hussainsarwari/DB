@@ -35,7 +35,8 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [dateRange, setDateRange] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 20;
+const [tableFilters, setTableFilters] = useState({});
+
 
   const staticSales = useMemo(
     () =>
@@ -53,24 +54,40 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
     setFinalSales(importedSales || salesData || staticSales);
   }, [importedSales, salesData, staticSales]);
 
-  const filteredSales = useMemo(() => {
-    let data = [...finalSales];
+const filteredSales = useMemo(() => {
+  let data = [...finalSales];
 
-    if (dateRange.length === 2) {
-      const [start, end] = dateRange;
-      data = data.filter((s) => s.date && moment(s.date).isBetween(start, end, "day", "[]"));
-    }
+  // فیلتر تاریخ
+  if (dateRange.length === 2) {
+    const [start, end] = dateRange;
+    data = data.filter(s =>
+      s.date &&
+      moment(s.date).isBetween(
+        start.format("YYYY-MM-DD"),
+        end.format("YYYY-MM-DD"),
+        "day",
+        "[]"
+      )
+    );
+  }
 
-    data.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
+  // فیلتر ستون‌ها بر اساس tableFilters
+  Object.entries(tableFilters).forEach(([key, value]) => {
+    if (value) data = data.filter(item => item[key] === value);
+  });
 
-    return data;
-  }, [finalSales, dateRange]);
+  // مرتب‌سازی بر اساس تاریخ
+  data.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
 
-  const currentData = useMemo(
-    () => filteredSales.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [filteredSales, currentPage]
-  );
+  return data;
+}, [finalSales, dateRange, tableFilters]);
 
+const currentData = useMemo(
+  () => filteredSales.slice((currentPage - 1) ),
+  [filteredSales, currentPage]
+);
+
+  // import back up
   const handleImportBackup = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,222 +137,225 @@ export default function SalesHistoryFull({ salesData = null, onClose }) {
   const formatCurrency = (value) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 
-  const summary = useMemo(() => ({
-    totalInvoices: filteredSales.length,
-    returnedCount: filteredSales.filter((s) => s.isReturn).length,
-    totalAmount: filteredSales.reduce(
-      (sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")),
-      0
-    ),
-    completedAmount: filteredSales
-      .filter((s) => !s.isReturn)
-      .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
-    returnedAmount: filteredSales
-      .filter((s) => s.isReturn)
-      .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
-  }), [filteredSales]);
+const summary = useMemo(() => ({
+  totalInvoices: filteredSales.length,
+  returnedCount: filteredSales.filter(s => s.isReturn).length,
+  totalAmount: filteredSales.reduce(
+    (sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")),
+    0
+  ),
+  completedAmount: filteredSales
+    .filter(s => !s.isReturn)
+    .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
+  returnedAmount: filteredSales
+    .filter(s => s.isReturn)
+    .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
+}), [filteredSales]);
 
+
+const handleColumnFilter = (key, value) => {
+  setTableFilters(prev => ({ ...prev, [key]: value }));
+};
+  
   // تابع برای گرفتن مقادیر داینامیک ستون‌ها
-  const getUniqueValues = (data, key) => [...new Set(data.map((item) => item[key]))];
+const buildFilters = (data, key) => {
+  return [...new Set(data.map(item => item[key]).filter(Boolean))].map(v => ({
+    text: v,
+    value: v,
+  }));
+};
 
-  const columns = [
-    {
-      title: "Invoice",
-      dataIndex: "invoice",
-      key: "invoice",
-      align: "center",
-      sorter: (a, b) => a.invoice.localeCompare(b.invoice),
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-          <Select
-            mode="multiple"
-            placeholder="Select Invoice"
-            value={selectedKeys}
-            onChange={(values) => setSelectedKeys(values)}
-            style={{ width: 200, marginBottom: 8 }}
-            allowClear
-          >
-            {getUniqueValues(finalSales, "invoice").map((inv) => (
-              <Option key={inv} value={inv}>{inv}</Option>
-            ))}
-          </Select>
-          <Space>
-            <Button onClick={confirm} type="primary" size="small">Filter</Button>
-            <Button onClick={clearFilters} size="small">Reset</Button>
-          </Space>
-        </div>
-      ),
-      onFilter: (values, record) => values.includes(record.invoice),
-    },
-    {
-      title: "Customer",
-      dataIndex: "customer",
-      key: "customer",
-      align: "center",
-      sorter: (a, b) => a.customer.localeCompare(b.customer),
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-          <Select
-            mode="multiple"
-            placeholder="Select Customer"
-            value={selectedKeys}
-            onChange={(values) => setSelectedKeys(values)}
-            style={{ width: 200, marginBottom: 8 }}
-            allowClear
-          >
-            {getUniqueValues(finalSales, "customer").map((c) => (
-              <Option key={c} value={c}>{c}</Option>
-            ))}
-          </Select>
-          <Space>
-            <Button onClick={confirm} type="primary" size="small">Filter</Button>
-            <Button onClick={clearFilters} size="small">Reset</Button>
-          </Space>
-        </div>
-      ),
-      onFilter: (values, record) => values.includes(record.customer),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      align: "center",
-      sorter: (a, b) => moment(a.date).valueOf() - moment(b.date).valueOf(),
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-          <DatePicker
-            value={selectedKeys[0]}
-            onChange={(date) => setSelectedKeys(date ? [date] : [])}
-            style={{ width: 160, marginBottom: 8 }}
-          />
-          <Space>
-            <Button onClick={confirm} type="primary" size="small">Filter</Button>
-            <Button onClick={clearFilters} size="small">Reset</Button>
-          </Space>
-        </div>
-      ),
-      onFilter: (values, record) => !values.length || moment(record.date).isSame(values[0], "day"),
-    },
-    {
-      title: "Total",
-      dataIndex: "total",
-      key: "total",
-      align: "center",
-      sorter: (a, b) => parseFloat(a.total.replace(/[^0-9.-]+/g, "")) - parseFloat(b.total.replace(/[^0-9.-]+/g, "")),
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-          <Select
-            mode="multiple"
-            placeholder="Select Total"
-            value={selectedKeys}
-            onChange={(values) => setSelectedKeys(values)}
-            style={{ width: 160, marginBottom: 8 }}
-            allowClear
-          >
-            {getUniqueValues(finalSales, "total").map((t) => (
-              <Option key={t} value={t}>{t}</Option>
-            ))}
-          </Select>
-          <Space>
-            <Button onClick={confirm} type="primary" size="small">Filter</Button>
-            <Button onClick={clearFilters} size="small">Reset</Button>
-          </Space>
-        </div>
-      ),
-      onFilter: (values, record) => values.includes(record.total),
-    },
-    {
-      title: "Status",
-      dataIndex: "isReturn",
-      key: "status",
-      align: "center",
-      filters: [
-        { text: "Completed", value: false },
-        { text: "Returned", value: true },
-      ],
-      onFilter: (value, record) => record.isReturn === value,
-      render: (isReturn) => <span style={{ color: isReturn ? "red" : "green" }}>{isReturn ? "Returned" : "Completed"}</span>,
-    },
-    {
-      title: "Action",
-      key: "action",
-      width: 100,
-      align: "center",
-      render: (_, record) => (
-        <div className="flex justify-center gap-1">
-          <Button icon={<EyeOutlined />} size="small" type="primary" onClick={() => setSelectedInvoice(record)} />
-        </div>
-      ),
-    },
-  ];
+const columns = [
+  {
+    title: "Invoice",
+    dataIndex: "invoice",
+    key: "invoice",
+    align: "center",          // مرکز چین شدن
+    width: 120,               // اختیاری: کم کردن عرض
+    filters: buildFilters(filteredSales, "invoice"),
+    filterMode: "tree",
+    filterSearch: true,
+    sorter: (a, b) => a.invoice.localeCompare(b.invoice),
+  },
+  {
+    title: "Customer",
+    dataIndex: "customer",
+    key: "customer",
+    align: "center",
+    width: 150,
+    filters: buildFilters(filteredSales, "customer"),
+    filterMode: "tree",
+    filterSearch: true,
+    sorter: (a, b) => a.customer.localeCompare(b.customer),
+  },
+  {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    align: "center",
+    width: 120,
+    filters: buildFilters(filteredSales, "date"),
+    filterSearch: true,
+    sorter: (a, b) => moment(a.date).valueOf() - moment(b.date).valueOf(),
+  },
+  {
+    title: "Total",
+    dataIndex: "total",
+    key: "total",
+    align: "center",
+    width: 120,
+    filters: buildFilters(filteredSales, "total"),
+    filterSearch: true,
+    sorter: (a, b) => Number(a.total) - Number(b.total),
+  },
+  {
+    title: "Status",
+    dataIndex: "isReturn",
+    key: "status",
+    align: "center",
+    width: 100,
+    filters: [
+      { text: "Completed", value: false },
+      { text: "Returned", value: true },
+    ],
+    render: isReturn => (
+      <span style={{ color: isReturn ? "red" : "green" }}>
+        {isReturn ? "Returned" : "Completed"}
+      </span>
+    ),
+  },
+  {
+    title: "Action",
+    key: "action",
+    align: "center",
+    width: 60,               // کاهش عرض Action
+    render: (_, record) => (
+      <Button
+        icon={<EyeOutlined />}
+        size="small"
+        type="primary"
+        onClick={() => setSelectedInvoice(record)}
+      />
+    ),
+  },
+];
+
+
 
   return (
-    <ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
-      <AnimatePresence>
-        <motion.div
-          className={`fixed inset-0 z-50 overflow-auto p-4 ${darkmode ? "bg-gray-900" : "bg-white"}`}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.25 }}
-        >
-          {/* Header */}
-          <div className="flex flex-col items-start justify-between gap-2 mb-3 md:flex-row md:items-center">
-            <Space wrap>
-              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportBackup} style={{ display: "none" }} />
-              <Button icon={<UploadOutlined />} type="primary" onClick={() => fileInputRef.current.click()}>Import Backup</Button>
-              <Button icon={<DatabaseOutlined />} onClick={handleBackup}>Backup</Button>
-              <Button icon={<PrinterOutlined />} onClick={() => window.print()}>Print</Button>
-              <RangePicker value={dateRange.length ? dateRange : undefined} onChange={(dates) => setDateRange(dates || [])} />
-            </Space>
-            <Button onClick={onClose} type="primary">Close</Button>
-          </div>
+<ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
+  <AnimatePresence>
+    <motion.div
+      className={`fixed inset-0 z-50 overflow-auto p-4 ${darkmode ? "bg-gray-900" : "bg-white"}`}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.25 }}
+    >
+      {/* Header */}
+      <div className="flex flex-col items-start justify-between gap-2 mb-3 md:flex-row md:items-center">
+        <Space wrap>
+          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportBackup} style={{ display: "none" }} />
+          <Button icon={<UploadOutlined />} type="primary" onClick={() => fileInputRef.current.click()}>Import Backup</Button>
+          <Button icon={<DatabaseOutlined />} onClick={handleBackup}>Backup</Button>
+          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>Print</Button>
+          <RangePicker value={dateRange.length ? dateRange : undefined} onChange={(dates) => setDateRange(dates || [])} />
+        </Space>
+        <Button onClick={onClose} type="primary">Close</Button>
+      </div>
 
-          {/* Summary */}
-          <div className="flex gap-2 py-3">
-            {[
-              ["Total Invoices", summary.totalInvoices],
-              ["Returned", summary.returnedCount],
-              ["Total Amount", formatCurrency(summary.totalAmount)],
-              ["Completed Amount", formatCurrency(summary.completedAmount)],
-              ["Returned Amount", formatCurrency(summary.returnedAmount)],
-            ].map(([title, value], i) => (
-              <div className=" sm:w-1/5" key={i}>
-                <Card hoverable className="text-center shadow-md">
-                  <div className="text-sm font-medium">{title}</div>
-                  <div className="text-xl font-semibold">{value}</div>
-                </Card>
-              </div>
-            ))}
-          </div>
+      {/* Summary با انیمیشن */}
+   <motion.div
+  className="flex gap-2 py-3"
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1, // کارت‌ها یکی‌یکی ظاهر شوند
+      },
+    },
+  }}
+>
+  {[
+    ["Total Invoices", summary.totalInvoices],
+    ["Returned", summary.returnedCount],
+    ["Total Amount", formatCurrency(summary.totalAmount)],
+    ["Completed Amount", formatCurrency(summary.completedAmount)],
+    ["Returned Amount", formatCurrency(summary.returnedAmount)],
+  ].map(([title, value], i) => (
+    <motion.div
+      key={i}
+      className="sm:w-1/5"
+      variants={{
+        hidden: { opacity: 0, y: 20, scale: 0.95 },
+        visible: { opacity: 1, y: 0, scale: 1 },
+      }}
+      transition={{
+        type: "spring",   // حرکت نرم‌تر با spring
+        stiffness: 150,   // سختی حرکت spring
+        damping: 20,      // مهار لرزش
+      }}
+    >
+      <Card hoverable className="text-center shadow-md">
+        <div className="text-sm font-medium">{title}</div>
+        <div className="text-xl font-semibold">{value}</div>
+      </Card>
+    </motion.div>
+  ))}
+</motion.div>
 
-          {/* Table */}
-          <Table
-            columns={columns}
-            dataSource={currentData}
-            rowKey="invoice"
-            bordered
-            pagination={false}
-            scroll={{ x: "max-content", y: 400 }}
+
+    {/* جدول با انیمیشن حرفه‌ای */}
+<motion.div
+  initial="hidden"
+  animate="visible"
+  
+  variants={{
+    hidden: { opacity: 0, y: 40, scale: 0.97 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",      // حرکت نرم و طبیعی
+        stiffness: 120,      // سختی حرکت spring
+        damping: 20,         // مهار لرزش
+        duration: 0.6,   
+        delay:0.5    // مدت زمان کلی
+      },
+    },
+  }}
+>
+  <Table
+    columns={columns}
+    dataSource={currentData}
+    rowKey="invoice"
+    pagination={{ pageSize: 10, current: currentPage }}
+    scroll={{ x: "max-content" }}
+    onChange={(pagination, filters, sorter) => {
+      Object.entries(filters).forEach(([key, value]) => {
+        handleColumnFilter(key, value?.[0] || null);
+      });
+      setCurrentPage(pagination.current);
+    }}
+  />
+</motion.div>
+
+
+  
+        {selectedInvoice && (
+          <InvoiceModal
+            visible={!!selectedInvoice}
+            invoice={selectedInvoice}
+            onClose={() => setSelectedInvoice(null)}
           />
+        )}
+   
+    </motion.div>
+  </AnimatePresence>
+</ConfigProvider>
 
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredSales.length}
-            showQuickJumper
-            showTotal={(total) => `Total ${total} items`}
-            onChange={setCurrentPage}
-            align="center"
-            style={{ marginTop: 20, textAlign: "center" }}
-          />
-
-          {/* Invoice Modal */}
-          <AnimatePresence>
-            {selectedInvoice && <InvoiceModal visible={!!selectedInvoice} invoice={selectedInvoice} onClose={() => setSelectedInvoice(null)} />}
-          </AnimatePresence>
-        </motion.div>
-      </AnimatePresence>
-    </ConfigProvider>
   );
 }
