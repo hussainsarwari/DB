@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { translations } from "./dictionary";
+import { sellHistoryTranslations } from "./sellHistory&SellReturned/dictionary";
 
 const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
@@ -19,13 +20,14 @@ export const LanguageProvider = ({ children }) => {
   });
 
   // 🌐 Language
-  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "eng");
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "fa");
 
   // 📍 Active page
   const [active, setActive] = useState(() => sessionStorage.getItem("active") || "home");
 
   // 🧠 Translations & Direction
   const t = useMemo(() => translations[lang], [lang]);
+  const SellPageHistory = useMemo(() => sellHistoryTranslations[lang], [lang]);
   const dir = lang === "eng" ? "flex-row" : " flex-row-reverse";
 
   // 🧩 Auto-save states
@@ -57,6 +59,7 @@ export const LanguageProvider = ({ children }) => {
       value={{
         active, setActive,
         lang, setLang,
+        SellPageHistory,
         t, dir,
         mobileMenuOpen, setMobileMenuOpen,
         menuCollapsed,setMenuCollapsed,
