@@ -235,6 +235,17 @@ ${productList}
     { name: "Product D", qty: 5, price: 20 },
     { name: "Product D", qty: 5, price: 20 },
     { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
+    { name: "Product D", qty: 5, price: 20 },
   ];
 return (
   <div
@@ -296,6 +307,13 @@ return (
         </div>
       )}
     </div>
+
+<div className="hidden print:block">
+  {items.map((item,i)=>(
+    <div key={i}>{item.name}</div>
+  ))}
+</div>
+    
 
     {/* ================= SUMMARY ================= */}
     <div className="flex flex-col gap-2 py-2 no-print">
@@ -466,7 +484,7 @@ ${darkmode?"bg-gray-800 border-gray-700":"bg-white  border-gray-200"}`}
     </div>
 
     {/* ================= PRINT FOOTER ================= */}
-    <div className="fixed bottom-0 left-0 hidden w-full px-5 pt-5 border-t border-gray-300 print:flex-col print-footer">
+    <div className="relative bottom-0 hidden w-full px-5 pt-5 border-t border-gray-300 print:flex-col print-footer">
       <div className={`flex justify-between gap-5 ${dir}`}>
         <div className="flex flex-col gap-1 text-sm">
           <div className="flex justify-between">

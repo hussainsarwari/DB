@@ -1,361 +1,284 @@
-import { useState, useRef, useMemo, useEffect } from "react";
-import * as XLSX from "xlsx";
+/* eslint-disable no-unused-vars */
+import { useState, useRef, useEffect } from "react";
+import "./saleHistoryPrinter.css";
 import {
   Table,
   Button,
-  Select,
   DatePicker,
-  Space,
   Pagination,
-  message,
   Card,
   ConfigProvider,
   theme,
+  Skeleton,
+  Typography
 } from "antd";
 import {
-  EyeOutlined,
   PrinterOutlined,
   UploadOutlined,
   DatabaseOutlined,
 } from "@ant-design/icons";
 import { useLanguage } from "../../Provider/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import moment from "moment";
 import InvoiceModal from "./InvoiceModal";
+import { generatePDF } from "../../components/PDFmaker";
+import useSellPageService from "../service/SellHistoryPageServices";
+
+
 
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
-export default function SalesHistoryFull({ salesData = null, onClose }) {
+export default function SalesHistoryFull({ onClose, salesData }) {
+  const {Title}=Typography
   const fileInputRef = useRef(null);
-  const { darkmode } = useLanguage();
-
-  const [finalSales, setFinalSales] = useState([]);
-  const [importedSales, setImportedSales] = useState(null);
+  const { darkmode ,SellPageHistory} = useLanguage();
+  const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [dateRange, setDateRange] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-const [tableFilters, setTableFilters] = useState({});
+  const [pageSize, setPageSize] = useState(20);
 
-
-  const staticSales = useMemo(
-    () =>
-      Array.from({ length: 90 }, (_, i) => ({
-        invoice: `INV-${1000 + i}`,
-        customer: `Customer ${i + 1}`,
-        date: `2036-01-${String((i % 30) + 1).padStart(2, "0")}`,
-        total: `$${(100 + i * 10).toFixed(2)}`,
-        isReturn: i % 8 === 0,
-      })),
-    []
-  );
-
+  /* ============== SIMULATE LOAD ============== */
   useEffect(() => {
-    setFinalSales(importedSales || salesData || staticSales);
-  }, [importedSales, salesData, staticSales]);
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(t);
+  }, [salesData, dateRange, currentPage, pageSize]);
 
-const filteredSales = useMemo(() => {
-  let data = [...finalSales];
-
-  // فیلتر تاریخ
-  if (dateRange.length === 2) {
-    const [start, end] = dateRange;
-    data = data.filter(s =>
-      s.date &&
-      moment(s.date).isBetween(
-        start.format("YYYY-MM-DD"),
-        end.format("YYYY-MM-DD"),
-        "day",
-        "[]"
-      )
-    );
-  }
-
-  // فیلتر ستون‌ها بر اساس tableFilters
-  Object.entries(tableFilters).forEach(([key, value]) => {
-    if (value) data = data.filter(item => item[key] === value);
+  /* ============== SERVICE ============== */
+  const {
+    columns,
+    handleColumnFilter,
+    summary,
+    handleBackup,
+    handleImportBackup,
+    currentData,
+    filteredSales,
+  } = useSellPageService({
+    currentPage,
+    salesData,
+    dateRange,
+    pageSize,
+    setCurrentPage,
+    setSelectedInvoice,
   });
 
-  // مرتب‌سازی بر اساس تاریخ
-  data.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
-
-  return data;
-}, [finalSales, dateRange, tableFilters]);
-
-const currentData = useMemo(
-  () => filteredSales.slice((currentPage - 1) ),
-  [filteredSales, currentPage]
-);
-
-  // import back up
-  const handleImportBackup = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
-        const mapped = json.map((row, i) => ({
-          invoice: row.Invoice || `IMPORTED-${i + 1}`,
-          customer: row.Customer || "Unknown",
-          date: row.Date,
-          total: `$${Number(row.Total).toFixed(2)}`,
-          isReturn: row.Status === "Returned",
-        }));
-        if (!mapped.length) return message.error("Invalid file");
-        setImportedSales(mapped);
-        message.success(`Backup imported (${mapped.length} invoices)`);
-        e.target.value = "";
-      } catch {
-        message.error("Failed to import backup file");
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  };
-
-  const handleBackup = () => {
-    const data = filteredSales.map((s) => ({
-      Invoice: s.invoice,
-      Customer: s.customer,
-      Date: s.date,
-      Total: parseFloat(s.total.replace(/[^0-9.-]+/g, "")),
-      Status: s.isReturn ? "Returned" : "Completed",
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales History");
-    XLSX.writeFile(
-      workbook,
-      `sales-backup-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.xlsx`
-    );
-    message.success("Backup created successfully");
-  };
-
-  const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
-
-const summary = useMemo(() => ({
-  totalInvoices: filteredSales.length,
-  returnedCount: filteredSales.filter(s => s.isReturn).length,
-  totalAmount: filteredSales.reduce(
-    (sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")),
-    0
-  ),
-  completedAmount: filteredSales
-    .filter(s => !s.isReturn)
-    .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
-  returnedAmount: filteredSales
-    .filter(s => s.isReturn)
-    .reduce((sum, s) => sum + parseFloat(s.total.replace(/[^0-9.-]+/g, "")), 0),
-}), [filteredSales]);
-
-
-const handleColumnFilter = (key, value) => {
-  setTableFilters(prev => ({ ...prev, [key]: value }));
-};
-  
-  // تابع برای گرفتن مقادیر داینامیک ستون‌ها
-const buildFilters = (data, key) => {
-  return [...new Set(data.map(item => item[key]).filter(Boolean))].map(v => ({
-    text: v,
-    value: v,
-  }));
-};
-
-const columns = [
-  {
-    title: "Invoice",
-    dataIndex: "invoice",
-    key: "invoice",
-    align: "center",          // مرکز چین شدن
-    width: 120,               // اختیاری: کم کردن عرض
-    filters: buildFilters(filteredSales, "invoice"),
-    filterMode: "tree",
-    filterSearch: true,
-    sorter: (a, b) => a.invoice.localeCompare(b.invoice),
-  },
-  {
-    title: "Customer",
-    dataIndex: "customer",
-    key: "customer",
-    align: "center",
-    width: 150,
-    filters: buildFilters(filteredSales, "customer"),
-    filterMode: "tree",
-    filterSearch: true,
-    sorter: (a, b) => a.customer.localeCompare(b.customer),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-    align: "center",
-    width: 120,
-    filters: buildFilters(filteredSales, "date"),
-    filterSearch: true,
-    sorter: (a, b) => moment(a.date).valueOf() - moment(b.date).valueOf(),
-  },
-  {
-    title: "Total",
-    dataIndex: "total",
-    key: "total",
-    align: "center",
-    width: 120,
-    filters: buildFilters(filteredSales, "total"),
-    filterSearch: true,
-    sorter: (a, b) => Number(a.total) - Number(b.total),
-  },
-  {
-    title: "Status",
-    dataIndex: "isReturn",
-    key: "status",
-    align: "center",
-    width: 100,
-    filters: [
-      { text: "Completed", value: false },
-      { text: "Returned", value: true },
-    ],
-    render: isReturn => (
-      <span style={{ color: isReturn ? "red" : "green" }}>
-        {isReturn ? "Returned" : "Completed"}
-      </span>
-    ),
-  },
-  {
-    title: "Action",
-    key: "action",
-    align: "center",
-    width: 60,               // کاهش عرض Action
-    render: (_, record) => (
-      <Button
-        icon={<EyeOutlined />}
-        size="small"
-        type="primary"
-        onClick={() => setSelectedInvoice(record)}
-      />
-    ),
-  },
-];
-
-
-
   return (
-<ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
-  <AnimatePresence>
-    <motion.div
-      className={`fixed inset-0 z-50 overflow-auto p-4 ${darkmode ? "bg-gray-900" : "bg-white"}`}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.25 }}
+    <ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
+      <AnimatePresence>
+        <motion.div
+          className={`fixed inset-0 z-50 overflow-y-auto px-3 py-4
+          ${darkmode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.96 }}
+        >
+          {/* ================= HEADER ================= */}
+       <div className="flex flex-col items-center gap-3 mb-4 lg:flex-row lg:justify-between">
+  {/* Left: Close button and Title */}
+  <div className="flex flex-col-reverse items-center w-full gap-5 lg:flex-row">
+    <Button className="w-full lg:w-20" danger onClick={onClose}>
+      {SellPageHistory.close}
+    </Button>
+    <Title level={4} className="font-bold text-gray-800 text-md">
+      {SellPageHistory.SellPageHistoryTitle}
+    </Title>
+  </div>
+
+  {/* Right: Actions */}
+  <div className="flex flex-col items-center w-full gap-2 lg:flex-row">
+    {/* Hidden File Input */}
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept=".xlsx,.xls"
+      onChange={handleImportBackup}
+      className="hidden "
+    />
+
+    {/* Backup Button */}
+    <Button className="w-full" icon={<DatabaseOutlined />} onClick={handleBackup}>
+      {SellPageHistory.backup}
+    </Button>
+
+    {/* Print PDF Button */}
+    <Button
+      icon={<PrinterOutlined />}
+      className="w-full"
+      onClick={() =>
+        generatePDF({
+          title: "Sales Report",
+          data: filteredSales,
+          columns: [
+            { key: "invoice", label: "Invoice" },
+            { key: "customer", label: "Customer" },
+            { key: "date", label: "Date" },
+            { key: "total", label: "Total" },
+            { key: "isReturn", label: "Status" },
+          ],
+          totalColumn: "total",
+          showTotal: true,
+        })
+      }
     >
-      {/* Header */}
-      <div className="flex flex-col items-start justify-between gap-2 mb-3 md:flex-row md:items-center">
-        <Space wrap>
-          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleImportBackup} style={{ display: "none" }} />
-          <Button icon={<UploadOutlined />} type="primary" onClick={() => fileInputRef.current.click()}>Import Backup</Button>
-          <Button icon={<DatabaseOutlined />} onClick={handleBackup}>Backup</Button>
-          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>Print</Button>
-          <RangePicker value={dateRange.length ? dateRange : undefined} onChange={(dates) => setDateRange(dates || [])} />
-        </Space>
-        <Button onClick={onClose} type="primary">Close</Button>
-      </div>
+      {SellPageHistory.printPdf}
+    </Button>
 
-      {/* Summary با انیمیشن */}
-   <motion.div
-  className="flex gap-2 py-3"
-  initial="hidden"
-  animate="visible"
-  variants={{
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1, // کارت‌ها یکی‌یکی ظاهر شوند
-      },
-    },
-  }}
->
-  {[
-    ["Total Invoices", summary.totalInvoices],
-    ["Returned", summary.returnedCount],
-    ["Total Amount", formatCurrency(summary.totalAmount)],
-    ["Completed Amount", formatCurrency(summary.completedAmount)],
-    ["Returned Amount", formatCurrency(summary.returnedAmount)],
-  ].map(([title, value], i) => (
-    <motion.div
-      key={i}
-      className="sm:w-1/5"
-      variants={{
-        hidden: { opacity: 0, y: 20, scale: 0.95 },
-        visible: { opacity: 1, y: 0, scale: 1 },
-      }}
-      transition={{
-        type: "spring",   // حرکت نرم‌تر با spring
-        stiffness: 150,   // سختی حرکت spring
-        damping: 20,      // مهار لرزش
-      }}
+    {/* Date Range Picker */}
+    <RangePicker
+    className="w-full"
+      value={dateRange.length ? dateRange : undefined}
+      onChange={(dates) => setDateRange(dates || [])}
+    />
+
+    {/* Custom Upload Button */}
+    <button
+      className="flex items-center w-full gap-1 px-3 py-2 text-sm text-white transition bg-blue-600 rounded cursor-pointer container-btn-file hover:bg-blue-700"
+      onClick={() => fileInputRef.current.click()}
+      title={SellPageHistory.uploadBackup}
     >
-      <Card hoverable className="text-center shadow-md">
-        <div className="text-sm font-medium">{title}</div>
-        <div className="text-xl font-semibold">{value}</div>
-      </Card>
-    </motion.div>
-  ))}
-</motion.div>
+      <svg
+        fill="#fff"
+        xmlns="http://www.w3.org/2000/svg"
+        width="15"
+        height="15"
+        viewBox="0 0 50 50"
+      >
+        <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
+      </svg>
+      {SellPageHistory.uploadBackup}
+    </button>
+  </div>
+</div>
 
 
-    {/* جدول با انیمیشن حرفه‌ای */}
-<motion.div
-  initial="hidden"
-  animate="visible"
-  
-  variants={{
-    hidden: { opacity: 0, y: 40, scale: 0.97 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",      // حرکت نرم و طبیعی
-        stiffness: 120,      // سختی حرکت spring
-        damping: 20,         // مهار لرزش
-        duration: 0.6,   
-        delay:0.5    // مدت زمان کلی
-      },
-    },
-  }}
->
-  <Table
-    columns={columns}
-    dataSource={currentData}
-    rowKey="invoice"
-    pagination={{ pageSize: 10, current: currentPage }}
-    scroll={{ x: "max-content" }}
-    onChange={(pagination, filters, sorter) => {
-      Object.entries(filters).forEach(([key, value]) => {
-        handleColumnFilter(key, value?.[0] || null);
-      });
-      setCurrentPage(pagination.current);
-    }}
-  />
-</motion.div>
+          {/* ================= SUMMARY ================= */}
+          <div className="grid grid-cols-1 gap-3 py-4 md:grid-cols-3 lg:grid-cols-5">
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <Card key={i}>
+                    <Skeleton active paragraph={{ rows: 1 }} />
+                  </Card>
+                ))
+              : [
+                  [SellPageHistory.totalInvoices, summary.totalInvoices],
+                  [SellPageHistory.returned, summary.returnedCount],
+                  [SellPageHistory.totalAmount, summary.totalAmount],
+                  [SellPageHistory.completedAmount, summary.completedAmount],
+                  [SellPageHistory.returnedAmount, summary.returnedAmount],
+                ].map(([title, value], i) => (
+                  <Card key={i}  className="text-center">
+                    <div className="text-sm">{title}</div>
+                    <div className="text-lg font-semibold">{value}</div>
+                  </Card>
+                ))}
+          </div>
 
+          {/* ================= DESKTOP TABLE ================= */}
+          <div className="hidden md:block">
+            <Table
+            bordered
+              size="small"
+              columns={columns}
+              dataSource={currentData}
+              rowKey="invoice"
+              pagination={false}
+              loading={loading}
+              onChange={(pagination, filters) => {
+                Object.entries(filters).forEach(([key, value]) =>
+                  handleColumnFilter(key, value)
+                );
+              }}
+            />
+          </div>
 
-  
-        {selectedInvoice && (
-          <InvoiceModal
-            visible={!!selectedInvoice}
-            invoice={selectedInvoice}
-            onClose={() => setSelectedInvoice(null)}
-          />
-        )}
-   
-    </motion.div>
-  </AnimatePresence>
-</ConfigProvider>
+          {/* ================= MOBILE CARDS ================= */}
+          <div className="flex flex-col gap-4 space-y-3 md:hidden">
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <Card key={i}>
+                    <Skeleton active paragraph={{ rows: 4 }} />
+                  </Card>
+                ))
+              : currentData.map((item) => (
+                  <div
+                    key={item.invoice}
+                    className={`rounded-lg border p-3 shadow-sm
+            ${
+              darkmode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200"
+            }`}
+                  >
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500"> {SellPageHistory.invoice}</span>
+                      <span className="font-semibold">{item.invoice}</span>
+                    </div>
 
+                    <div className="flex justify-between mt-1 text-sm">
+                      <span className="text-gray-500">{SellPageHistory.customer}</span>
+                      <span className="text-right">{item.customer}</span>
+                    </div>
+
+                    <div className="flex justify-between mt-1 text-sm">
+                      <span className="text-gray-500">{SellPageHistory.date}</span>
+                      <span>{item.date}</span>
+                    </div>
+
+                    <div className="flex justify-between mt-1 text-sm">
+                      <span className="text-gray-500">{SellPageHistory.total}</span>
+                      <span className="font-semibold">
+                        {item.total}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between mt-1 text-sm">
+                      <span className="text-gray-500">{SellPageHistory.status}</span>
+                      <span
+                        className={`font-semibold ${
+                          item.isReturn ? "text-red-500" : "text-green-600"
+                        }`}
+                      >
+                        {item.isReturn ? "Returned" : "Completed"}
+                      </span>
+                    </div>
+                    <div className="py-4">
+                      <button
+                        className="flex justify-center w-full .my_button"
+                        onClick={() => setSelectedInvoice(item)}
+                      >
+                        <span className="w-full px-3 py-2 box ">{SellPageHistory.details}</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+          </div>
+
+          {/* ================= PAGINATION ================= */}
+          {!loading && (
+            <div className="flex justify-center py-6">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredSales.length}
+                showSizeChanger
+                onChange={(page, size) => {
+                  setCurrentPage(page);
+                  setPageSize(size);
+                }}
+              />
+            </div>
+          )}
+
+          {/* ================= INVOICE MODAL ================= */}
+          {selectedInvoice && (
+            <InvoiceModal
+              visible={!!selectedInvoice}
+              invoice={selectedInvoice}
+              onClose={() => setSelectedInvoice(null)}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </ConfigProvider>
   );
 }

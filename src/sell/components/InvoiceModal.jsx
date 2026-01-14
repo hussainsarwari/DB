@@ -1,69 +1,107 @@
-import React from "react";
-import { Drawer, Table, Button } from "antd";
-import { Printer } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import {
+  Drawer,
+  Table,
+  Button,
+  ConfigProvider,
+  theme,
+  Skeleton,
+  Card,
+} from "antd";
+import { Printer } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function InvoiceModal({ visible, onClose }) {
-  const invoice = {
-    invoice: "INV-1001",
-    customer: "John Doe",
-    date: "2036-01-09",
-    driver: "Ahmad",
-    discount: "$10.00",
-    expenses: "$5.00",
-    previousRemaining: "$20.00",
-    totalRemaining: "$115.00",
-    referrer: "Karim",
-    note: "Deliver between 10AM-12PM",
-    paymentAFN: "5000",
-    paymentUSD: "50",
-    items: Array.from({ length: 20 }, (_, i) => ({
-      key: i + 1,
-      item: `Product ${String.fromCharCode(65 + (i % 26))}`,
-      description: `Description for product ${i + 1}`,
-      unit: "pcs",
-      quantity: i + 1,
-      unitPrice: `$${(i + 1) * 5}`,
-      totalPrice: `$${(i + 1) * (i + 1) * 5}`,
-    })),
-  };
+import { useLanguage } from "../../Provider/LanguageContext";
+import { generatePDF } from "../../components/PDFmaker";
 
+export default function InvoiceModal({ visible, onClose }) {
+  const { darkmode } = useLanguage();
+
+  const [loading, setLoading] = useState(true);
+  const [invoice, setInvoice] = useState(null);
+
+  /* ================= LOAD DATA ================= */
+  useEffect(() => {
+    if (!visible) return;
+
+    setLoading(true);
+
+    // simulate API
+    setTimeout(() => {
+      setInvoice({
+        invoice: "INV-1001",
+        customer: "محمد حسین",
+        date: "2036-01-09",
+        driver: "Ahmad",
+        discount: "10.00",
+        expenses: "5.00",
+        previousRemaining: "20.00",
+        totalRemaining: "115.00",
+        referrer: "Karim",
+        note: "Deliver between 10AM-12PM",
+        paymentAFN: "5000",
+        paymentUSD: "50",
+        totalPrice: "123",
+        items: Array.from({ length: 20 }, (_, i) => ({
+          key: i + 1,
+          item: `Product ${i + 1}`,
+          description: `Description for product ${i + 1}`,
+          unit: "pcs",
+          quantity: i + 1,
+          unitPrice: `$${(i + 1) * 5}`,
+          totalPrice: `$${(i + 1) * (i + 1) * 5}`,
+        })),
+      });
+
+      setLoading(false);
+    }, 3200);
+  }, [visible]);
+
+  /* ================= TABLE COLUMNS ================= */
   const columns = [
     { title: "Item Name", dataIndex: "item", key: "item", ellipsis: true },
     { title: "Description", dataIndex: "description", key: "description", ellipsis: true },
     { title: "Unit", dataIndex: "unit", key: "unit", width: 60 },
-    { title: "Quantity", dataIndex: "quantity", key: "quantity", width: 60 },
+    { title: "Qy", dataIndex: "quantity", key: "quantity", width: 60 },
     { title: "Unit Price", dataIndex: "unitPrice", key: "unitPrice", width: 90 },
     { title: "Total Price", dataIndex: "totalPrice", key: "totalPrice", width: 100 },
   ];
 
+  const pdfData =
+    invoice?.items?.map((item) => ({
+      item: item.item,
+      description: item.description,
+      unit: item.unit,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+    })) || [];
+
   return (
-    <AnimatePresence>
-      {visible && (
-        <Drawer
-          width={Math.min(window.innerWidth - 40, 800)}
-          placement="right"
-          onClose={onClose}
-          open={visible}
-          className="p-0 text-gray-900"
-          bodyStyle={{ padding: 0 }}
+  <ConfigProvider theme={darkmode ? { algorithm: theme.darkAlgorithm } : {}}>
+  <AnimatePresence>
+    {visible && (
+      <Drawer
+        placement="left"
+        open={visible}
+        onClose={onClose}
+        bodyStyle={{ padding: 0 }}
+        width="100%"
+        className="sm:!w-[90%] md:!w-[80%] lg:!w-[800px]"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: 60 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 60 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18 }}
+          className={`min-h-screen p-4 sm:p-6 flex flex-col gap-6
+          ${darkmode ? "bg-[#1f1f1f] text-gray-200" : "bg-white text-gray-700"}`}
         >
-          <motion.div
-            key="invoice-modal"
-            initial={{ opacity: 0, x: 100, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 120, damping: 20, duration: 4.9 }}
-            className="p-6 bg-white flex flex-col gap-6 min-h-[400px]"
-          >
-            {/* Customer & Invoice Info */}
-            <motion.div
-              className="grid grid-cols-1 gap-3 pb-3 text-sm border-b border-gray-200 sm:grid-cols-2 md:grid-cols-3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            >
-              {/* اطلاعات مشتری */}
+          {/* ================= HEADER ================= */}
+          {loading ? (
+            <Skeleton active title={{ width: "90%" }} paragraph={{ rows: 7 }} />
+          ) : (
+            <div className="grid grid-cols-1 gap-2 pb-4 text-sm border-b sm:grid-cols-2 lg:grid-cols-3">
               {[
                 ["Customer", invoice.customer],
                 ["Date", invoice.date],
@@ -73,54 +111,118 @@ export default function InvoiceModal({ visible, onClose }) {
                 ["Expenses", invoice.expenses],
                 ["Prev Remaining", invoice.previousRemaining],
                 ["Total Remaining", invoice.totalRemaining],
+                ["Total", invoice.totalPrice],
                 ["Referrer", invoice.referrer || "---"],
                 ["Payment AFN", invoice.paymentAFN],
                 ["Payment USD", invoice.paymentUSD],
               ].map(([label, value], i) => (
-                <div className="flex justify-between" key={i}>
+                <div key={i} className="flex justify-between gap-2">
                   <span className="font-medium">{label}:</span>
-                  <span className="ml-2 text-gray-700 truncate">{value}</span>
+                  <span className="text-right">{value}</span>
                 </div>
               ))}
 
               {invoice.note && (
-                <div className="flex justify-between col-span-1 sm:col-span-2 md:col-span-3">
+                <div className="col-span-full">
                   <span className="font-medium">Note:</span>
-                  <span className="ml-2 text-gray-700">{invoice.note}</span>
+                  <div className="mt-1 text-sm opacity-90">{invoice.note}</div>
                 </div>
               )}
-            </motion.div>
+            </div>
+          )}
 
-            {/* Items Table */}
-            <motion.div
-              className="overflow-x-auto"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, type: "spring", stiffness: 120, damping: 20,  duration:1}}
-            >
-              <Table
-                columns={columns}
-                dataSource={invoice.items}
-                pagination={false}
-                size="small"
-                bordered
-                scroll={{ y: 300 }}
-                className="bg-gray-50"
-              />
-            </motion.div>
+          {/* ================= ITEMS ================= */}
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 120, damping: 20 }}
-            >
-              <Button type="primary">
-                <Printer size={20}/> Print
+          {/* DESKTOP / TABLET */}
+          <div className="hidden sm:block">
+            <Table
+              columns={columns}
+              dataSource={invoice?.items || []}
+              loading={loading}
+              pagination={false}
+              size="small"
+              bordered
+              scroll={{ x: "max-content", y: 320 }}
+            />
+          </div>
+
+          {/* MOBILE / CARDS */}
+          <div className="flex flex-col gap-3 space-y-3 sm:hidden">
+            {loading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <Card key={i} loading className="shadow-sm" />
+                ))
+              : invoice?.items?.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-lg  p-3 text-sm shadow-sm
+                    ${darkmode ? "bg-[#333] " : "bg-gray-50 border-gray-200"}`}
+                  >
+                    <div className="flex justify-between">
+                      <span className="font-medium">Item</span>
+                      <span>{item.item}</span>
+                    </div>
+
+                    <div className="flex justify-between mt-1">
+                      <span className="font-medium">Qty</span>
+                      <span>{item.quantity}</span>
+                    </div>
+
+                    <div className="flex justify-between mt-1">
+                      <span className="font-medium">Unit</span>
+                      <span>{item.unit}</span>
+                    </div>
+
+                    <div className="flex justify-between mt-1">
+                      <span className="font-medium">Unit Price</span>
+                      <span>{item.unitPrice}</span>
+                    </div>
+
+                    <div className="flex justify-between pt-2 mt-2 font-semibold border-t">
+                      <span>Total</span>
+                      <span>{item.totalPrice}</span>
+                    </div>
+                  </div>
+                ))}
+          </div>
+
+          {/* ================= ACTION ================= */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            {loading ? (
+              <Skeleton.Button active block />
+            ) : (
+              <Button
+                type="primary"
+                size="large"
+                className="w-full sm:w-auto"
+                icon={<Printer size={18} />}
+                onClick={() =>
+                  generatePDF({
+                    title: `Invoice #${invoice.invoice}`,
+                    fileName: `invoice-${invoice.invoice}.pdf`,
+                    data: pdfData,
+                    columns: [
+                      { key: "item", label: "Item Name" },
+                      { key: "description", label: "Description" },
+                      { key: "unit", label: "Unit" },
+                      { key: "quantity", label: "Quantity" },
+                      { key: "unitPrice", label: "Unit Price" },
+                      { key: "totalPrice", label: "Total Price" },
+                    ],
+                    showTotal: true,
+                    totalColumn: "totalPrice",
+                  })
+                }
+              >
+                Print PDF
               </Button>
-            </motion.div>
-          </motion.div>
-        </Drawer>
-      )}
-    </AnimatePresence>
+            )}
+          </div>
+        </motion.div>
+      </Drawer>
+    )}
+  </AnimatePresence>
+</ConfigProvider>
+
   );
 }

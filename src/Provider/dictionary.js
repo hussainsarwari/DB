@@ -561,7 +561,6 @@ partners:"شریک ها",
     placeholderDriverName: "نام راننده",
     productListHeader: "محصول",
     other: "وغیره",
-    
     select_commission_based_worker:"معرفی کننده",
     quantity: "تعداد",
     price: "قیمت",
